@@ -1,0 +1,9 @@
+# Expose basic setup paths. BOXEN_HOME is already exported at the top level.
+
+export BOXEN_BIN_DIR=<%= scope.lookupvar('boxen::config::bindir') %>
+export BOXEN_CONFIG_DIR=<%= scope.lookupvar('boxen::config::configdir') %>
+export BOXEN_DATA_DIR=<%= scope.lookupvar('boxen::config::datadir') %>
+export BOXEN_ENV_DIR=<%= scope.lookupvar('boxen::config::envdir') %>
+export BOXEN_LOG_DIR=<%= scope.lookupvar('boxen::config::logdir') %>
+export BOXEN_SOCKET_DIR=<%= scope.lookupvar('boxen::config::socketdir') %>
+export BOXEN_SRC_DIR=<%= scope.lookupvar('boxen::config::srcdir') %>
