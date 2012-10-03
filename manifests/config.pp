@@ -44,8 +44,8 @@ class boxen::config {
   }
 
   $puppet_data_dirs = [
-    "${::ghome}/data/puppet",
-    "${::ghome}/data/puppet/graphs"
+    "${home}/data/puppet",
+    "${home}/data/puppet/graphs"
   ]
 
   file { $puppet_data_dirs:
