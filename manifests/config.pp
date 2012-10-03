@@ -1,5 +1,5 @@
 class boxen::config {
-  $home        = $::boxenhome
+  $home        = $::boxen_home
   $bindir      = "${home}/bin"
   $configdir   = "${home}/config"
   $datadir     = "${home}/data"
@@ -7,8 +7,8 @@ class boxen::config {
   $homebrewdir = "${home}/homebrew"
   $logdir      = "${home}/log"
   $socketdir   = "${datadir}/project-sockets"
-  $srcdir      = $::boxensrcdir
-  $login       = $::ghlogin
+  $srcdir      = $::boxen_srcdir
+  $login       = $::github_login
 
   file { [$home,
           $srcdir,
