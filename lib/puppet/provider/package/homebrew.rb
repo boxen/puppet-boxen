@@ -16,10 +16,10 @@ Puppet::Type.type(:package).provide :homebrew,
   # A list of `ensure` values that aren't explicit versions.
 
   def self.home # FIX: boxen::config::homebrewdir
+    #Facter[:boxen_home].value
     "/opt/boxen/homebrew"
   end
 
-  commands :brew => "#{home}/bin/brew"
   confine  :operatingsystem => :darwin
 
   def self.run(*cmds)
@@ -125,5 +125,17 @@ Puppet::Type.type(:package).provide :homebrew,
 
   def update
     install
+  end
+
+  private
+  def lazy_brew(*args)
+    brew *args
+  rescue NoMethodError => e
+    if File.exists? "#{self.class.home}/bin/brew"
+      self.class.commands :brew => "#{home}/bin/brew"
+      brew *args
+    else
+      raise e
+    end
   end
 end
