@@ -3,4 +3,5 @@ class boxen::environment {
   require boxen::janitor
   require boxen::profile
   require boxen::gemrc
+  include boxen::sudoers
 }
