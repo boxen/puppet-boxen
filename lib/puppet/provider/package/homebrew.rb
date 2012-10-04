@@ -15,9 +15,8 @@ Puppet::Type.type(:package).provide :homebrew,
 
   # A list of `ensure` values that aren't explicit versions.
 
-  def self.home # FIX: boxen::config::homebrewdir
-    #Facter[:boxen_home].value
-    "/opt/boxen/homebrew"
+  def self.home
+    @@home ||= Facter[:boxen_home].value
   end
 
   confine  :operatingsystem => :darwin
@@ -75,12 +74,12 @@ Puppet::Type.type(:package).provide :homebrew,
       # one, and the right one isn't installed. That's an upgrade.
 
       update_recipes unless version_defined? version
-      run "gh-upgrade", resource[:name]
+      run "boxen-upgrade", resource[:name]
     else
       # Nothing here? Nothing from before? Yay! It's a normal install.
 
       update_recipes unless version_defined? version
-      run "gh-install", resource[:name], *install_options
+      run "boxen-install", resource[:name], *install_options
     end
   end
 
@@ -103,7 +102,7 @@ Puppet::Type.type(:package).provide :homebrew,
   end
 
   def latest
-    run("gh-latest", resource[:name]).strip
+    run("boxen-latest", resource[:name]).strip
   end
 
   def query
