@@ -6,7 +6,7 @@ class boxen::config {
   $envdir      = "${home}/env.d"
   $homebrewdir = "${home}/homebrew"
   $logdir      = "${home}/log"
-  $repodir     = "${home}/repo"
+  $repodir     = $::boxen_repodir
   $socketdir   = "${datadir}/project-sockets"
   $srcdir      = $::boxen_srcdir
   $login       = $::github_login
