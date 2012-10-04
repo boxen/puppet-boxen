@@ -85,7 +85,7 @@ Puppet::Type.type(:package).provide :homebrew,
   end
 
   def update_recipes
-    unless self.class.const_get(:UPDATED_BREW)
+    unless self.class.const_defined?(:UPDATED_BREW)
       run :update rescue nil
       self.class.const_set(:UPDATED_BREW, true)
     end
