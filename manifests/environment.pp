@@ -1,8 +1,11 @@
 class boxen::environment {
+  # must be run very early
   require boxen::config
   require boxen::gemrc
-  require boxen::janitor
-  require boxen::profile
-  require boxen::security
+
+  # can be run whenever
+  include boxen::janitor
+  include boxen::profile
+  include boxen::security
   include boxen::sudoers
 }
