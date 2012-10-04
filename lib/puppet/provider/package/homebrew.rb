@@ -23,10 +23,12 @@ Puppet::Type.type(:package).provide :homebrew,
 
   def self.run(*cmds)
     command = ["sudo", "-E", "-u", Facter[:luser].value, "#{home}/bin/brew", *cmds].flatten.join(' ')
-    `#{command}`
+    output = `#{command}`
     unless $? == 0
       fail "Failed running #{command}"
     end
+
+    output
   end
 
   # Update Homebrew once per run if it's possible.
