@@ -4,8 +4,9 @@ Puppet::Type.type(:repository).provide(:git) do
   desc "Git repository clones"
 
   # FIX: needs to infer path
-  CRED_HELPER = "-c credential.helper=/opt/boxen/bin/gh-setup-git-credential"
-  GIT_BIN = "/opt/boxen/homebrew/bin/git"
+  CRED_HELPER_PATH = "#{Facter[:boxen_home].value}/bin/boxen-git-credential"
+  CRED_HELPER = "-c credential.helper=#{CRED_HELPER_PATH}"
+  GIT_BIN = "#{Facter[:boxen_home].value}/homebrew/bin/git"
   commands :git => GIT_BIN
 
   def self.default_protocol
@@ -21,14 +22,24 @@ Puppet::Type.type(:repository).provide(:git) do
     source = expand_source(@resource[:source])
     path = @resource[:path]
 
-    args = [
-      GIT_BIN,
-      "clone",
-      CRED_HELPER,
-      @resource[:extra].to_a.flatten.join(' ').strip,
-      source,
-      path
-    ]
+    if File.exist? CRED_HELPER
+      args = [
+        GIT_BIN,
+        "clone",
+        CRED_HELPER,
+        @resource[:extra].to_a.flatten.join(' ').strip,
+        source,
+        path
+      ]
+    else
+      args = [
+        GIT_BIN,
+        "clone",
+        @resource[:extra].to_a.flatten.join(' ').strip,
+        source,
+        path
+      ]
+    end
 
     execute args.flatten.join(' '), :uid => Facter[:luser].value
   end
