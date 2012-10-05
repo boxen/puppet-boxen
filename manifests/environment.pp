@@ -7,6 +7,7 @@ class boxen::environment {
   include boxen::bin
   include boxen::janitor
   include boxen::profile
+  include boxen::repo
   include boxen::security
   include boxen::sudoers
 }
