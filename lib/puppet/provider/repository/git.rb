@@ -22,7 +22,7 @@ Puppet::Type.type(:repository).provide(:git) do
     source = expand_source(@resource[:source])
     path = @resource[:path]
 
-    if File.exist? CRED_HELPER
+    if File.exist? CRED_HELPER_PATH
       args = [
         GIT_BIN,
         "clone",
