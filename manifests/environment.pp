@@ -4,6 +4,7 @@ class boxen::environment {
   require boxen::gemrc
 
   # can be run whenever
+  include boxen::bin
   include boxen::janitor
   include boxen::profile
   include boxen::security
