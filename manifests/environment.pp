@@ -6,6 +6,7 @@ class boxen::environment {
   # can be run whenever
   include boxen::bin
   include boxen::janitor
+  include boxen::personal
   include boxen::profile
   include boxen::repo
   include boxen::security
