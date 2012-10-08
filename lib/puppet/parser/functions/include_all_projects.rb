@@ -4,9 +4,11 @@ module Puppet::Parser::Functions
 
     repo = "#{Facter[:boxen_home].value}/repo"
     Dir["#{repo}/modules/projects/manifests/*.pp"].each do |project|
-      next if project =~ /all\.pp$/
+      class_name = project.split('/').last
 
-      function_include [project.gsub(/\.pp$/, '')]
+      next if class_name =~ /all\.pp$/
+
+      function_include [class_name.gsub(/\.pp$/, '')]
     end
   end
 end
