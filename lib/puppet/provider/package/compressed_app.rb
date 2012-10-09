@@ -47,18 +47,16 @@ Puppet::Type.type(:package).provide :compressed_app,
                   end
 
 
-    safe_name = shell_quote(name)
+    curl source, "-L", "-q", "-o", "'/opt/boxen/cache/#{name}.app.#{source_type}'"
 
-    curl source, "-L", "-q", "-o", "/opt/boxen/cache/#{safe_name}.app.#{source_type}"
-
-    execute "rm -rf /Applications/#{safe_name}.app", :uid => 'root'
+    execute "rm -rf '/Applications/#{name}.app'", :uid => 'root'
 
     case source_type
     when 'zip'
       execute [
         "/usr/bin/unzip",
         "-o",
-        "/opt/boxen/cache/#{safe_name}.app.#{source_type}",
+        "'/opt/boxen/cache/#{name}.app.#{source_type}'",
         "-d",
         "/Applications"
       ].join(' '), :uid => 'root'
@@ -66,7 +64,7 @@ Puppet::Type.type(:package).provide :compressed_app,
       execute [
         "/usr/bin/tar",
         "-zxf",
-        "/opt/boxen/cache/#{safe_name}.app.#{source_type}",
+        "'/opt/boxen/cache/#{name}.app.#{source_type}'",
         "-C",
         "/Applications"
       ].join(' '), :uid => 'root'
@@ -74,23 +72,21 @@ Puppet::Type.type(:package).provide :compressed_app,
       execute [
         "/usr/bin/tar",
         "-jxf",
-        "/opt/boxen/cache/#{safe_name}.app.#{source_type}",
+        "'/opt/boxen/cache/#{name}.app.#{source_type}'",
         "-C",
         "/Applications"
       ].join(' '), :uid => 'root'
     end
 
-    File.open("/var/db/.puppet_compressed_app_installed_#{safe_name}", "w") do |t|
+    File.open("/var/db/.puppet_compressed_app_installed_#{name}", "w") do |t|
       t.print "name: '#{name}'\n"
       t.print "source: '#{source}'\n"
     end
   end
 
   def self.uninstall_compressed_app(name)
-    safe_name = shell_quote(name)
-
-    execute "rm -rf /Applications/#{safe_name}", :uid => 'root'
-    execute "rm -f /var/db/.puppet_compressed_app_installed_#{safe_name}"
+    execute "rm -rf '/Applications/#{name}'", :uid => 'root'
+    execute "rm -f '/var/db/.puppet_compressed_app_installed_#{name}'"
   end
 
   def query
@@ -122,30 +118,5 @@ Puppet::Type.type(:package).provide :compressed_app,
 
   def uninstall
     self.class.uninstall_compressed_app @resource[:name]
-  end
-
-  def self.shell_quote(*args)
-    safe = 'a-zA-Z0-9@%_+=:,./-'    # Safe unquoted
-    dangerous = '!"`$\\'            # Unsafe inside double quotes
-
-    result = []
-    args.flatten.each do |word|
-      if word.length != 0 and word.count(safe) == word.length
-        result << word
-      elsif word.count(dangerous) == 0
-        result << ('"' + word + '"')
-      elsif word.count("'") == 0
-        result << ("'" + word + "'")
-      else
-        r = '"'
-        word.each_byte do |c|
-          r += "\\" if dangerous.include?(c.chr)
-          r += c.chr
-        end
-        r += '"'
-        result << r
-      end
-    end
-    return result.join(" ")
   end
 end
