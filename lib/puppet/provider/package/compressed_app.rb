@@ -7,8 +7,6 @@ Puppet::Type.type(:package).provide :compressed_app,
 
   SOURCE_TYPES = %w(zip tar.gz tar.bz2 tgz tbz)
 
-  commands :curl => "/usr/bin/curl"
-
   confine  :operatingsystem => :darwin
 
   def self.instances_by_name
@@ -47,8 +45,7 @@ Puppet::Type.type(:package).provide :compressed_app,
                   end
 
 
-    curl source, "-L", "-q", "-o", "'/opt/boxen/cache/#{name}.app.#{source_type}'"
-
+    execute "curl '#{source}' -L -q -o '/opt/boxen/cache/#{name}.app.#{source_type}'"
     execute "rm -rf '/Applications/#{name}.app'", :uid => 'root'
 
     case source_type
