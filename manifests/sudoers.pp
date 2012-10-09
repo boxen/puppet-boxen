@@ -19,4 +19,14 @@ class boxen::sudoers {
     ],
     type => 'user_spec',
   }
+
+  sudoers { 'launchctl':
+    users    => $luser,
+    hosts    => 'ALL',
+    commands => [
+      '(ALL) NOPASSWD : /bin/launchctl load',
+      '/bin/launchctl unload',
+    ],
+    type => 'user_spec',
+  }
 }
