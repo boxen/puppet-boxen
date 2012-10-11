@@ -5,7 +5,7 @@ class boxen::sudoers {
     commands => [
       '(ALL) NOPASSWD : /bin/mkdir -p /tmp/puppet',
       "/bin/mkdir -p ${::boxen_home}",
-      "/usr/sbin/chown ${::luser}\:staff ${::boxen_home}",
+      "/usr/sbin/chown ${::luser}\\:staff ${::boxen_home}",
       "${boxen::config::repodir}/bin/puppet",
       '/bin/rm -f /tmp/boxen.log'
     ],
