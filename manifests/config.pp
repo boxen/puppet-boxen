@@ -1,6 +1,7 @@
 class boxen::config {
   $home        = $::boxen_home
   $bindir      = "${home}/bin"
+  $cachedir    = "${home}/cache"
   $configdir   = "${home}/config"
   $datadir     = "${home}/data"
   $envdir      = "${home}/env.d"
@@ -15,6 +16,7 @@ class boxen::config {
   file { [$home,
           $srcdir,
           $bindir,
+          $cachedir,
           $configdir,
           $datadir,
           $envdir,
