@@ -44,7 +44,7 @@ describe Puppet::Type.type(:repository) do
   it "should fail when not provided with a source" do
     expect {
       described_class.new(:path => '/tmp/foo')
-    }.to raise_error(Puppet::Error, /You must specify a repository source/)
+    }.to raise_error(Puppet::Error, /You must specify a source/)
   end
 
   it "should fail when not provided with a path" do
