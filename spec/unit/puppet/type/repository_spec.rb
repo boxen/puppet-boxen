@@ -5,6 +5,21 @@ describe Puppet::Type.type(:repository) do
   let(:resource) {
     described_class.new(:source => 'boxen/boxen', :path => '/tmp/boxen')
   }
+  let(:facts) do
+    {
+      :boxen_home => '/opt/boxen/',
+      :luser      => 'skalnik'
+    }
+  end
+
+  # FIXME - rspec-puppet should properly stub facts instead of this hack.
+  before :each do
+    facts.each do |fact, val|
+      Facter.add(fact.to_s) do
+        setcode { val }
+      end
+    end
+  end
 
   it "should accept an ensure property" do
     resource[:ensure] = :present
