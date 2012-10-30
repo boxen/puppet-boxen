@@ -1,4 +1,9 @@
 require 'spec_helper'
+
+# Stub out some boxen specific Facter facts
+Facter.add('boxen_home') { setcode { '/opt/boxen' } }
+Facter.add('luser') { setcode { 'skalnik' } }
+
 require 'puppet/type/repository'
 
 describe Puppet::Type.type(:repository) do
@@ -39,7 +44,7 @@ describe Puppet::Type.type(:repository) do
   it "should fail when not provided with a source" do
     expect {
       described_class.new(:path => '/tmp/foo')
-    }.to raise_error(Puppet::Error, /You must specify a repository source/)
+    }.to raise_error(Puppet::Error, /You must specify a source/)
   end
 
   it "should fail when not provided with a path" do
