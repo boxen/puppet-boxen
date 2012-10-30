@@ -7,10 +7,10 @@ module Puppet::Parser::Functions
       path = "#{Facter[:boxen_repodir].value}/modules/projects/manifests/#{project}.pp"
 
       if File.exist?(path)
-        warn "Setting up '#{project}'. This can be made permanent by having 'include projects::#{project}' in your personal manifest."
+        warning "Setting up '#{project}'. This can be made permanent by having 'include projects::#{project}' in your personal manifest."
         function_include ["projects::#{project}"]
       else
-        warn "Don't know anything about '#{project}'. Help out by defining it at '#{path}'."
+        warning "Don't know anything about '#{project}'. Help out by defining it at '#{path}'."
       end
     end
   end
