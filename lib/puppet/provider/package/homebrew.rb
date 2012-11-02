@@ -116,7 +116,7 @@ Puppet::Type.type(:package).provide :homebrew,
   end
 
   def run(*cmds)
-    self.class.run *cmds
+    self.class.run(*cmds)
   end
 
   def uninstall
@@ -133,11 +133,11 @@ Puppet::Type.type(:package).provide :homebrew,
 
   private
   def lazy_brew(*args)
-    brew *args
+    brew(*args)
   rescue NoMethodError => e
     if File.exists? "#{self.class.home}/bin/brew"
       self.class.commands :brew => "#{home}/bin/brew"
-      brew *args
+      brew(*args)
     else
       raise e
     end

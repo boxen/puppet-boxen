@@ -7,7 +7,7 @@ module Puppet::Util
   alias_method :benchmark_without_filtering, :benchmark
 
   def benchmark(*args, &block)
-    level, msg = args
+    _, msg = args
 
     return yield if /finished catalog/i =~ msg
     benchmark_without_filtering(*args, &block)
