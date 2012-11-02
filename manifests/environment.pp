@@ -11,4 +11,6 @@ class boxen::environment {
   include boxen::repo
   include boxen::security
   include boxen::sudoers
+
+  include_projects_from_boxen_cli()
 }

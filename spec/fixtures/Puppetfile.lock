@@ -1,0 +1,14 @@
+GITHUBTARBALL
+  remote: boxen/puppet-homebrew
+  specs:
+    homebrew (0.0.15)
+
+GITHUBTARBALL
+  remote: boxen/puppet-sudo
+  specs:
+    sudo (0.0.1)
+
+DEPENDENCIES
+  homebrew (= 0.0.15)
+  sudo (= 0.0.1)
+
