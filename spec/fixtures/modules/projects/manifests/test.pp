@@ -1,0 +1,3 @@
+class projects::test {
+  # stub
+}

@@ -6,6 +6,10 @@ GEM
     hiera (1.1.1.rc1)
       json
     json (1.7.5)
+    librarian-puppet (0.9.7)
+      json
+      puppet
+      thor (~> 0.15)
     metaclass (0.0.1)
     mocha (0.12.7)
       metaclass (~> 0.0.1)
@@ -29,11 +33,13 @@ GEM
     rspec-mocks (2.11.3)
     rspec-puppet (0.1.5)
       rspec
+    thor (0.16.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  librarian-puppet (~> 0.9.7)
   puppet (= 3.0.0)
   puppet-lint (= 0.3.1)
   puppetlabs_spec_helper (= 0.3.0)
