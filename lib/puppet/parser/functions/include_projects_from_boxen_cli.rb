@@ -1,9 +1,12 @@
+require 'fileutils'
+
 module Puppet::Parser::Functions
   newfunction(:include_projects_from_boxen_cli) do |args|
     Puppet::Parser::Functions.function('include')
 
     if File.exists?("#{Facter[:boxen_repodir].value}/.projects") \
-      && cli_projects = File.read("#{Facter[:boxen_repodir].value}/.projects").strip
+      && cli_projects = File.read("#{Facter[:boxen_repodir].value}/.projects").strip \
+      && FileUtils.rm_rf("#{Facter[:boxen_repodir].value}/.projects")
 
       cli_projects.split(',').each do |project|
         path = "#{Facter[:boxen_repodir].value}/modules/projects/manifests/#{project}.pp"
