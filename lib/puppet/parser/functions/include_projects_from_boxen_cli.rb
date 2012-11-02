@@ -2,9 +2,12 @@ module Puppet::Parser::Functions
   newfunction(:include_projects_from_boxen_cli) do |args|
     Puppet::Parser::Functions.function('include')
 
-    if Facter[:cli_boxen_projects] && cli_projects = Facter[:cli_boxen_projects].value
+    if File.exists?("#{Facter[:boxen_repodir].value}/.projects") \
+      && cli_projects = File.read("#{Facter[:boxen_repodir].value}/.projects").strip
+
       cli_projects.split(',').each do |project|
         path = "#{Facter[:boxen_repodir].value}/modules/projects/manifests/#{project}.pp"
+        puts path
 
         if File.exist?(path)
           warning "Setting up '#{project}'. This can be made permanent by having 'include projects::#{project}' in your personal manifest."
