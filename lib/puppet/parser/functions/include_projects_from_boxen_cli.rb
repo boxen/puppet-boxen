@@ -3,6 +3,7 @@ module Puppet::Parser::Functions
     Puppet::Parser::Functions.function('include')
 
     cli_projects = Facter[:cli_boxen_projects].value
+
     cli_projects.split(',').each do |project|
       path = "#{Facter[:boxen_repodir].value}/modules/projects/manifests/#{project}.pp"
 
