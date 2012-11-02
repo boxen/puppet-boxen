@@ -9,26 +9,26 @@ class boxen::sudoers {
       "${boxen::config::repodir}/bin/puppet",
       '/bin/rm -f /tmp/boxen.log'
     ],
-    type => 'user_spec',
+    type     => 'user_spec',
   }
 
   sudoers { 'fdesetup':
-    users    => $luser,
+    users    => $::luser,
     hosts    => 'ALL',
     commands => [
       '(ALL) NOPASSWD : /usr/bin/fdesetup status',
       '/usr/bin/fdesetup list',
     ],
-    type => 'user_spec',
+    type     => 'user_spec',
   }
 
   sudoers { 'launchctl':
-    users    => $luser,
+    users    => $::luser,
     hosts    => 'ALL',
     commands => [
       '(ALL) NOPASSWD : /bin/launchctl load',
       '/bin/launchctl unload',
     ],
-    type => 'user_spec',
+    type     => 'user_spec',
   }
 }
