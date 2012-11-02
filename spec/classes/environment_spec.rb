@@ -8,6 +8,11 @@ Facter.add('boxen_repodir') do
   end
 end
 
+File.open(File.join(File.dirname(__FILE__), '..', 'fixtures', '.projects'), 'w+') do |f|
+  f.truncate 0
+  f.write 'test'
+end
+
 describe "boxen::environment" do
   context "projects from cli" do
     let(:facts) do
