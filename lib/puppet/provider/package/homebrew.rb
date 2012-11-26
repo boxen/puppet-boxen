@@ -87,8 +87,9 @@ Puppet::Type.type(:package).provide :homebrew,
   end
 
   def update_formulas
-    unless self.class.const_defined?(:UPDATED_BREW) && self.UPDATED_BREW
-      notice "Updating homebrew formulas"
+    unless self.class.const_defined?(:UPDATED_BREW)
+      warning "Updating homebrew formulas"
+
       run :update rescue nil
       self.class.const_set(:UPDATED_BREW, true)
     end
