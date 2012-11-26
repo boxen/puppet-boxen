@@ -1,2 +1,2 @@
-mod 'homebrew', '0.0.15', :github_tarball => 'boxen/puppet-homebrew'
+mod 'homebrew', '0.0.16', :github_tarball => 'boxen/puppet-homebrew'
 mod 'sudo',     '0.0.1',  :github_tarball => 'boxen/puppet-sudo'

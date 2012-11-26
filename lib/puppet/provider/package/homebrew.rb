@@ -31,8 +31,6 @@ Puppet::Type.type(:package).provide :homebrew,
     output
   end
 
-  # Update Homebrew once per run if it's possible.
-
   def self.active?(name, version)
     current(name) == version
   end
@@ -78,18 +76,19 @@ Puppet::Type.type(:package).provide :homebrew,
       # Okay, so there's a version already active, it's not the right
       # one, and the right one isn't installed. That's an upgrade.
 
-      update_recipes unless version_defined? version
+      update_formulas unless version_defined? version
       run "boxen-upgrade", resource[:name]
     else
       # Nothing here? Nothing from before? Yay! It's a normal install.
 
-      update_recipes unless version_defined? version
+      update_formulas unless version_defined? version
       run "boxen-install", resource[:name], *install_options
     end
   end
 
-  def update_recipes
-    unless self.class.const_defined?(:UPDATED_BREW)
+  def update_formulas
+    unless self.class.const_defined?(:UPDATED_BREW) && self.UPDATED_BREW
+      notice "Updating homebrew formulas"
       run :update rescue nil
       self.class.const_set(:UPDATED_BREW, true)
     end

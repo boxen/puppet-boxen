@@ -1,7 +1,7 @@
 GITHUBTARBALL
   remote: boxen/puppet-homebrew
   specs:
-    homebrew (0.0.15)
+    homebrew (0.0.16)
 
 GITHUBTARBALL
   remote: boxen/puppet-sudo
@@ -9,6 +9,6 @@ GITHUBTARBALL
     sudo (0.0.1)
 
 DEPENDENCIES
-  homebrew (= 0.0.15)
+  homebrew (= 0.0.16)
   sudo (= 0.0.1)
 
