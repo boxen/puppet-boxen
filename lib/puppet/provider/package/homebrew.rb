@@ -63,7 +63,7 @@ Puppet::Type.type(:package).provide :homebrew,
   def install
     version = unversioned? ? latest : resource[:ensure]
 
-    update_formulas unless version_defined?(version) || version == 'latest'
+    update_formulas if !version_defined?(version) || version == 'latest'
 
     if self.class.available? resource[:name], version
       # If the desired version is already installed, just link or
