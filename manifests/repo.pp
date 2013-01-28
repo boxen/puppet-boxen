@@ -9,5 +9,6 @@ class boxen::repo {
     command => "git init && ${remote_add} && ${git_fetch} && ${git_reset}",
     creates => "${::boxen_home}/repo/.git",
     cwd     => "${::boxen_home}/repo",
+    require => Class['git'],
   }
 }
