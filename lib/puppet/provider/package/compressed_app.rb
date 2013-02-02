@@ -75,6 +75,13 @@ Puppet::Type.type(:package).provide :compressed_app,
       ].join(' '), :uid => 'root'
     end
 
+    execute [
+      "/usr/sbin/chown",
+      "-R",
+      "#{Facter[:boxen_user].value}:admin",
+      "/Applications/#{name}.app"
+    ].join(" "), :uid => 'root'
+
     File.open("/var/db/.puppet_compressed_app_installed_#{name}", "w") do |t|
       t.print "name: '#{name}'\n"
       t.print "source: '#{source}'\n"
