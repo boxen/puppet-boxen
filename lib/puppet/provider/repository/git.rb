@@ -27,7 +27,7 @@ Puppet::Type.type(:repository).provide(:git) do
         GIT_BIN,
         "clone",
         CRED_HELPER,
-        @resource[:extra].to_a.flatten.join(' ').strip,
+        [@resource[:extra]].flatten.join(' ').strip,
         source,
         path
       ]
@@ -35,7 +35,7 @@ Puppet::Type.type(:repository).provide(:git) do
       args = [
         GIT_BIN,
         "clone",
-        @resource[:extra].to_a.flatten.join(' ').strip,
+        [@resource[:extra]].flatten.join(' ').strip,
         source,
         path
       ]
