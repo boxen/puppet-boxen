@@ -1,10 +1,16 @@
-# Boxen Puppet Module
+# Required Modules for Boxen
 
-This includes various components required for boxen to run properly.
+An example of how we write Puppet modules for Boxen. Replace this
+paragraph with a short explanation of what the heck makes your module
+useful.
 
-## Developing
+## Usage
 
-Write code.
+```puppet
+# We owe you examples. Sorry.
+```
 
-Run `script/cibuild`.
+## Development
 
+Write code. Run `script/cibuild` to test it. Check the `script`
+directory for other useful tools.
