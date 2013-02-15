@@ -1,8 +1,6 @@
 # Required Modules for Boxen
 
-An example of how we write Puppet modules for Boxen. Replace this
-paragraph with a short explanation of what the heck makes your module
-useful.
+Fundamental modules and types used by all of Boxen.
 
 ## Usage
 
