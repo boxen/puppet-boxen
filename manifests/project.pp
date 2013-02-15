@@ -26,7 +26,7 @@
 #
 #     nginx =>
 #       If true, ensures nginx is installed and uses standard template at
-#       modules/projects/templates/project/nginx.conf.erb.
+#       modules/projects/templates/shared/nginx.conf.erb.
 #       If given a string, uses that template instead.
 #
 #     postgresql =>
