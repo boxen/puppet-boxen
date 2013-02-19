@@ -10,9 +10,10 @@ define boxen::osx_defaults(
 
   if $ensure == 'present' {
     if ($domain != undef) and ($key != undef) and ($value != undef) {
-      $cmd = "${defaults_cmd} write ${domain} ${key} '${value}'"
       if ($type != undef) {
         $cmd = "${defaults_cmd} write ${domain} ${key} -${type} '${value}'"
+      } else {
+        $cmd = "${defaults_cmd} write ${domain} ${key} '${value}'"
       }
       exec { "osx_defaults write ${domain}:${key}=>${value}":
         command => "${cmd}",
