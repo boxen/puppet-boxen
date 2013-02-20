@@ -16,6 +16,10 @@ if config.respond_to? :reponame
   facts["boxen_reponame"] = config.reponame
 end
 
+if config.respond_to? :repohost
+  facts["boxen_repohost"] = config.repohost
+end
+
 facts["luser"]          = config.user
 
 Dir["#{config.homedir}/config/facts/*.json"].each do |file|
