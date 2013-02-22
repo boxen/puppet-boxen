@@ -1,5 +1,6 @@
 class boxen::repo {
-  $remote_add = "git remote add origin https://github.com/${boxen::config::reponame}"
+  $clone_url = "${boxen::config::repo_url_template}" % ${boxen::config::reponame}
+  $remote_add = "git remote add origin $clone_url"
   $git_fetch = "git fetch -q origin"
   $git_reset = "git reset --hard origin/master"
 
