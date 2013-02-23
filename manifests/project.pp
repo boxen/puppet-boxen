@@ -100,6 +100,7 @@ define boxen::project(
 
   if $nginx {
     include nginx::config
+    include nginx
 
     $nginx_templ = $nginx ? {
       true    => 'projects/shared/nginx.conf.erb',
