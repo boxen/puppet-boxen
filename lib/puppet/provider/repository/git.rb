@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'shellwords'
 
 Puppet::Type.type(:repository).provide(:git) do
   desc "Git repository clones"
@@ -29,7 +30,7 @@ Puppet::Type.type(:repository).provide(:git) do
         CRED_HELPER,
         [@resource[:extra]].flatten.join(' ').strip,
         source,
-        path
+        Shellwords.escape(path)
       ]
     else
       args = [
@@ -37,7 +38,7 @@ Puppet::Type.type(:repository).provide(:git) do
         "clone",
         [@resource[:extra]].flatten.join(' ').strip,
         source,
-        path
+        Shellwords.escape(path)
       ]
     end
 
