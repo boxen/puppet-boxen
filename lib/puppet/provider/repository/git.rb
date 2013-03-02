@@ -52,7 +52,9 @@ Puppet::Type.type(:repository).provide(:git) do
   end
 
   def expand_source(source)
-    if source =~ /\A\S+\/\S+\z/
+    # Catch anything that is simply "foo/bar", don't get things with
+    # // or @ in the first hunk.
+    if source =~ /\A[^\/\s@]+\/[^\/\s]+\z/
       "#{@resource[:protocol]}://github.com/#{source}"
     else
       source
