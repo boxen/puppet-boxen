@@ -1,4 +1,6 @@
 class boxen::repo {
+  include boxen::config
+
   $clone_url = "${boxen::config::repo_url_template}" % ${boxen::config::reponame}
   $remote_add = "git remote add origin $clone_url"
   $git_fetch = "git fetch -q origin"
