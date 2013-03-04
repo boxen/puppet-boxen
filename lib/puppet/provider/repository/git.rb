@@ -22,27 +22,18 @@ Puppet::Type.type(:repository).provide(:git) do
   def create
     source = expand_source(@resource[:source])
     path = @resource[:path]
+    extras = [@resource[:extra]].flatten
+    extras << CRED_HELPER if File.exist?(CRED_HELPER_PATH)
 
-    if File.exist? CRED_HELPER_PATH
-      args = [
-        GIT_BIN,
-        "clone",
-        CRED_HELPER,
-        [@resource[:extra]].flatten.join(' ').strip,
-        source,
-        Shellwords.escape(path)
-      ]
-    else
-      args = [
-        GIT_BIN,
-        "clone",
-        [@resource[:extra]].flatten.join(' ').strip,
-        source,
-        Shellwords.escape(path)
-      ]
-    end
+    command = [
+      GIT_BIN,
+      "clone",
+      extras.join(' ').strip,
+      source,
+      Shellwords.escape(path)
+    ].flatten.compact.join(' ')
 
-    execute args.flatten.join(' '), :uid => Facter[:luser].value
+    execute command, :combine => true, :failonfail => true, :uid => Facter[:luser].value
   end
 
   def destroy
