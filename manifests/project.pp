@@ -58,6 +58,7 @@ define boxen::project(
   $postgresql    = undef,
   $redis         = undef,
   $ruby          = undef,
+  $server_name   = "${name}.dev",
 ) {
   include boxen::config
 
