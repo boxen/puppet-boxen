@@ -17,7 +17,8 @@ describe "boxen::environment" do
   context "projects from cli" do
     let(:facts) do
       {
-        :boxen_home         => "/opt/boxen",
+        :boxen_home              => "/opt/boxen",
+        :boxen_repo_url_template => "https://github.com/%s"
       }
     end
 
