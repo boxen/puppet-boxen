@@ -18,8 +18,7 @@ describe 'boxen::osx_defaults' do
       with(:command => "/usr/bin/defaults write #{domain} #{key} '#{value}'")
   end
 
-  context "currentHost" do
-    let(:host) { 'currentHost' }
+  context "with a host" do
     let(:params) {
       { :domain => domain,
         :key    => key,
@@ -28,9 +27,22 @@ describe 'boxen::osx_defaults' do
       }
     }
 
-    it do
-      should contain_exec("osx_defaults write #{host} #{domain}:#{key}=>#{value}").
-        with(:command => "/usr/bin/defaults -currentHost write #{domain} #{key} '#{value}'")
+    context "currentHost" do
+      let(:host) { 'currentHost' }
+
+      it do
+        should contain_exec("osx_defaults write #{host} #{domain}:#{key}=>#{value}").
+          with(:command => "/usr/bin/defaults -currentHost write #{domain} #{key} '#{value}'")
+      end
+    end
+
+    context "specific host" do
+      let(:host) { 'mybox.example.com' }
+
+      it do
+        should contain_exec("osx_defaults write #{host} #{domain}:#{key}=>#{value}").
+          with(:command => "/usr/bin/defaults -host #{host} write #{domain} #{key} '#{value}'")
+      end
     end
   end
 end
