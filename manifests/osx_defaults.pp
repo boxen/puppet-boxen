@@ -23,7 +23,7 @@ define boxen::osx_defaults(
       }
       exec { "osx_defaults write ${host} ${domain}:${key}=>${value}":
         command => "${cmd}",
-        unless  => "${defaults_cmd}${host_option} read ${domain} ${key} && (${defaults_cmd} read ${domain} ${key} | awk '{ exit \$0 != \"${value}\" }')",
+        unless  => "${defaults_cmd}${host_option} read ${domain} ${key} && (${defaults_cmd}${host_option} read ${domain} ${key} | awk '{ exit \$0 != \"${value}\" }')",
         user    => $user
       }
     } else {
