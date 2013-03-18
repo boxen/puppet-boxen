@@ -28,9 +28,17 @@ define boxen::osx_defaults(
         default => "${defaults_cmd}${host_option} write ${domain} ${key} -${type} '${value}'"
       }
 
+      if ($type =~ /^bool/) {
+        $checkvalue = $value ? {
+          /(true|yes)/ => '1',
+          /(false|no)/ => '0',
+        }
+      } else {
+        $checkvalue = $value
+      }
       exec { "osx_defaults write ${host} ${domain}:${key}=>${value}":
         command => $cmd,
-        unless  => "${defaults_cmd}${host_option} read ${domain} ${key} && (${defaults_cmd}${host_option} read ${domain} ${key} | awk '{ exit \$0 != \"${value}\" }')",
+        unless  => "${defaults_cmd}${host_option} read ${domain} ${key} && (${defaults_cmd}${host_option} read ${domain} ${key} | awk '{ exit \$0 != \"${checkvalue}\" }')",
         user    => $user
       }
     } # end present
