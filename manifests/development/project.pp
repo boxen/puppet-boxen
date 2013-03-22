@@ -1,8 +1,8 @@
 define boxen::development::project($dirname = $title) {
-  $dir = "${boxen::development::dir}/$dirname"
+  $dir = "${boxen::development::dir}/${dirname}"
 
   repository { $dir:
-    source => "boxen/$title"
+    source => "boxen/${title}"
   }
 
   ruby::local { $dir:
