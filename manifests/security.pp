@@ -1,3 +1,5 @@
+# Private: A basic security profile for Boxen boxes
+
 class boxen::security {
   boxen::osx_defaults { 'require password at screensaver':
     ensure => present,

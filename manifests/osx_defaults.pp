@@ -1,3 +1,5 @@
+# Public: Set a system config option with the OS X defaults system
+
 define boxen::osx_defaults(
   $ensure = 'present',
   $host   = undef,
@@ -8,32 +10,37 @@ define boxen::osx_defaults(
   $type   = undef,
 ) {
   $defaults_cmd = '/usr/bin/defaults'
-  case $host {
-    'currentHost': { $host_option = ' -currentHost' }
-    undef:         { $host_option = '' }
-    default:       { $host_option = " -host ${host}" }
+
+  $host_option = $host ? {
+    'currentHost' => ' -currentHost',
+    undef         => '',
+    default       => " -host ${host}"
   }
 
-  if $ensure == 'present' {
-    if ($domain != undef) and ($key != undef) and ($value != undef) {
-      if ($type != undef) {
-        $cmd = "${defaults_cmd}${host_option} write ${domain} ${key} -${type} '${value}'"
-      } else {
-        $cmd = "${defaults_cmd}${host_option} write ${domain} ${key} '${value}'"
+  case $ensure {
+    present: {
+      if ($domain == undef) or ($key == undef) or ($value == undef) {
+        fail('Cannot ensure present without domain, key, and value attributes')
       }
+
+      $cmd = $type ? {
+        undef   => "${defaults_cmd}${host_option} write ${domain} ${key} '${value}'",
+        default => "${defaults_cmd}${host_option} write ${domain} ${key} -${type} '${value}'"
+      }
+
       exec { "osx_defaults write ${host} ${domain}:${key}=>${value}":
-        command => "${cmd}",
+        command => $cmd,
         unless  => "${defaults_cmd}${host_option} read ${domain} ${key} && (${defaults_cmd}${host_option} read ${domain} ${key} | awk '{ exit \$0 != \"${value}\" }')",
         user    => $user
       }
-    } else {
-      warning('Cannot ensure present without domain, key, and value attributes')
-    }
-  } else {
-    exec { "osx_defaults delete ${host} ${domain}:${key}":
-      command => "${defaults_cmd}${host_option} delete ${domain} ${key}",
-      onlyif  => "${defaults_cmd}${host_option} read ${domain} | grep ${key}",
-      user    => $user
-    }
+    } # end present
+
+    default: {
+      exec { "osx_defaults delete ${host} ${domain}:${key}":
+        command => "${defaults_cmd}${host_option} delete ${domain} ${key}",
+        onlyif  => "${defaults_cmd}${host_option} read ${domain} | grep ${key}",
+        user    => $user
+      }
+    } # end default
   }
 }

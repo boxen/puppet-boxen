@@ -1,3 +1,5 @@
+# Private: Ensure we can run Boxen, launchctl, and fdesetup without sudo prompt
+
 class boxen::sudoers {
   sudoers { 'boxen':
     users    => $::luser,

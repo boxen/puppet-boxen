@@ -1,3 +1,5 @@
+# Private: Sets up global bins on path boxen will use
+
 class boxen::bin {
   include boxen::config
 

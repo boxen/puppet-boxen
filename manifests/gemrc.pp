@@ -1,3 +1,5 @@
+# Private: Properly configure the Boxen gemrc environment
+
 class boxen::gemrc {
   require boxen::config
 
