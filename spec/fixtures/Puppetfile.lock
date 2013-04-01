@@ -8,7 +8,13 @@ GITHUBTARBALL
   specs:
     sudo (0.0.1)
 
+GITHUBTARBALL
+  remote: puppetlabs/puppetlabs-stdlib
+  specs:
+    stdlib (3.0.0)
+
 DEPENDENCIES
   homebrew (= 0.0.16)
+  stdlib (= 3.0.0)
   sudo (= 0.0.1)
 

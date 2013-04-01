@@ -29,20 +29,34 @@ define boxen::osx_defaults(
         $type_ = $type
       }
 
+      if (is_hash($value)) {
+        $value_ = inline_template('<%= value.to_a.flatten.map {|e| "\'#{e}\'"}.join(" ") %>')
+        if ($type_ == undef) {
+          $type_ = 'dict'
+        }
+      } elsif (is_array($value)) {
+        $value_ = inline_template('<%= value.map {|e| "\'#{e}\'"}.join(" ") %>')
+        if ($type_ == undef) {
+          $type_ = 'dict'
+        }
+      } else {
+        $value_ = "'${value}'"
+      }
+
       $cmd = $type_ ? {
-        undef   => "${defaults_cmd}${host_option} write ${domain} ${key} '${value}'",
-        default => "${defaults_cmd}${host_option} write ${domain} ${key} -${type_} '${value}'"
+        undef   => "${defaults_cmd}${host_option} write ${domain} ${key} ${value_}",
+        default => "${defaults_cmd}${host_option} write ${domain} ${key} -${type_} ${value_}"
       }
 
       if ($type_ =~ /^bool/) {
-        $checkvalue = $value ? {
+        $checkvalue = $value_ ? {
           /(true|yes)/ => '1',
           /(false|no)/ => '0',
         }
       } else {
         $checkvalue = $value
       }
-      exec { "osx_defaults write ${host} ${domain}:${key}=>${value}":
+      exec { "osx_defaults write ${host} ${domain}:${key}=>${value_}":
         command => $cmd,
         unless  => "${defaults_cmd}${host_option} read ${domain} ${key} && (${defaults_cmd}${host_option} read ${domain} ${key} | awk '{ exit \$0 != \"${checkvalue}\" }')",
         user    => $user
