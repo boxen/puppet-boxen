@@ -14,7 +14,7 @@ describe 'boxen::osx_defaults' do
   }
 
   it do
-    should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+    should contain_exec("osx_defaults write  #{domain}:#{key}=>'#{value}'").
       with(:command => "/usr/bin/defaults write #{domain} #{key} '#{value}'")
   end
 
@@ -31,7 +31,7 @@ describe 'boxen::osx_defaults' do
       let(:host) { 'currentHost' }
 
       it do
-        should contain_exec("osx_defaults write #{host} #{domain}:#{key}=>#{value}").
+        should contain_exec("osx_defaults write #{host} #{domain}:#{key}=>'#{value}'").
           with(:command => "/usr/bin/defaults -currentHost write #{domain} #{key} '#{value}'")
       end
     end
@@ -40,9 +40,39 @@ describe 'boxen::osx_defaults' do
       let(:host) { 'mybox.example.com' }
 
       it do
-        should contain_exec("osx_defaults write #{host} #{domain}:#{key}=>#{value}").
+        should contain_exec("osx_defaults write #{host} #{domain}:#{key}=>'#{value}'").
           with(:command => "/usr/bin/defaults -host #{host} write #{domain} #{key} '#{value}'")
       end
+    end
+  end
+
+  context "with hash value" do
+    let(:params) do
+      { :domain => domain,
+        :key    => key,
+        :type   => 'dict',
+        :value  => { 'x' => 1, 'y' => 3 }
+      }
+    end
+
+    it do
+      should contain_exec("osx_defaults write  #{domain}:#{key}=>'x' '1' 'y' '3'").
+        with(:command => "/usr/bin/defaults write #{domain} #{key} -dict 'x' '1' 'y' '3'")
+    end
+  end
+
+  context "value is array" do
+    let(:params) do
+      { :domain => domain,
+        :key    => key,
+        :type   => 'dict',
+        :value  => [ 1, 2, 3, 4 ]
+      }
+    end
+
+    it do
+      should contain_exec("osx_defaults write  #{domain}:#{key}=>'1' '2' '3' '4'").
+        with(:command => "/usr/bin/defaults write #{domain} #{key} -dict '1' '2' '3' '4'")
     end
   end
 end

@@ -16,12 +16,19 @@ define boxen::osx_defaults(
 
   if $ensure == 'present' {
     if ($domain != undef) and ($key != undef) and ($value != undef) {
-      if ($type != undef) {
-        $cmd = "${defaults_cmd}${host_option} write ${domain} ${key} -${type} '${value}'"
+      if (is_hash($value)) {
+        $value_option = inline_template('<%= value.to_a.flatten.map {|e| "\'#{e}\'"}.join(" ") %>')
+      } elsif (is_array($value)) {
+        $value_option = inline_template('<%= value.map {|e| "\'#{e}\'"}.join(" ") %>')
       } else {
-        $cmd = "${defaults_cmd}${host_option} write ${domain} ${key} '${value}'"
+        $value_option = "'${value}'"
       }
-      exec { "osx_defaults write ${host} ${domain}:${key}=>${value}":
+      if ($type != undef) {
+        $cmd = "${defaults_cmd}${host_option} write ${domain} ${key} -${type} ${value_option}"
+      } else {
+        $cmd = "${defaults_cmd}${host_option} write ${domain} ${key} ${value_option}"
+      }
+      exec { "osx_defaults write ${host} ${domain}:${key}=>${value_option}":
         command => "${cmd}",
         unless  => "${defaults_cmd}${host_option} read ${domain} ${key} && (${defaults_cmd}${host_option} read ${domain} ${key} | awk '{ exit \$0 != \"${value}\" }')",
         user    => $user
