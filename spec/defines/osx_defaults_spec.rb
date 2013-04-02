@@ -51,13 +51,13 @@ describe 'boxen::osx_defaults' do
       { :domain => domain,
         :key    => key,
         :type   => 'dict',
-        :value  => { 'x' => 1, 'y' => 3 }
+        :value  => { 'x' => 1 } # multiple values => unpredictable order so test may fail
       }
     end
 
     it do
-      should contain_exec("osx_defaults write  #{domain}:#{key}=>'x' '1' 'y' '3'").
-        with(:command => "/usr/bin/defaults write #{domain} #{key} -dict 'x' '1' 'y' '3'")
+      should contain_exec("osx_defaults write  #{domain}:#{key}=>'x' '1'").
+        with(:command => "/usr/bin/defaults write #{domain} #{key} -dict 'x' '1'")
     end
   end
 
