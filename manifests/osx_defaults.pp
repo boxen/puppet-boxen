@@ -17,30 +17,44 @@ define boxen::osx_defaults(
     default       => " -host ${host}"
   }
 
-  case $ensure {
+    case $ensure {
     present: {
-      if ($domain == undef) or ($key == undef) or ($value == undef) {
-        fail('Cannot ensure present without domain, key, and value attributes')
-      }
+      $exec_key = "osx_defaults write ${host} ${domain}:${key}=>${value}"
 
-      $cmd = $type ? {
-        undef   => "${defaults_cmd}${host_option} write ${domain} ${key} '${value}'",
-        default => "${defaults_cmd}${host_option} write ${domain} ${key} -${type} '${value}'"
-      }
+      if defined(Exec[$exec_key]) {
+        warning("Default already defined: ${exec_key}")
+      } else {
 
-      exec { "osx_defaults write ${host} ${domain}:${key}=>${value}":
-        command => $cmd,
-        unless  => "${defaults_cmd}${host_option} read ${domain} ${key} && (${defaults_cmd}${host_option} read ${domain} ${key} | awk '{ exit \$0 != \"${value}\" }')",
-        user    => $user
-      }
+        if ($domain == undef) or ($key == undef) or ($value == undef) {
+          fail('Cannot ensure present without domain, key, and value attributes')
+        }
+
+        $cmd = $type ? {
+          undef   => "${defaults_cmd}${host_option} write ${domain} ${key} '${value}'",
+          default => "${defaults_cmd}${host_option} write ${domain} ${key} -${type} '${value}'"
+        }
+
+        exec { $exec_key:
+          command => $cmd,
+          unless  => "${defaults_cmd}${host_option} read ${domain} ${key} && (${defaults_cmd}${host_option} read ${domain} ${key} | awk '{ exit \$0 != \"${value}\" }')",
+          user    => $user
+        }
+      } # end defined
     } # end present
 
     default: {
-      exec { "osx_defaults delete ${host} ${domain}:${key}":
-        command => "${defaults_cmd}${host_option} delete ${domain} ${key}",
-        onlyif  => "${defaults_cmd}${host_option} read ${domain} | grep ${key}",
-        user    => $user
-      }
+      $exec_key = "osx_defaults delete ${host} ${domain}:${key}"
+
+      if defined(Exec[$exec_key]) {
+        warning("Default already defined: ${exec_key}")
+      } else {
+
+        exec { $exec_key:
+          command => "${defaults_cmd}${host_option} delete ${domain} ${key}",
+          onlyif  => "${defaults_cmd}${host_option} read ${domain} | grep ${key}",
+          user    => $user
+        }
+      } #end defined
     } # end default
-  }
+  } #end case
 }
