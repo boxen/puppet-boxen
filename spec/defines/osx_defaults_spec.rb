@@ -60,6 +60,22 @@ describe 'boxen::osx_defaults' do
     end
   end
 
+  context "with a boolean value" do
+    let(:value) { true }
+    let(:params) {
+      { :domain => domain,
+        :key    => key,
+        :value  => value
+      }
+    }
+
+    it do
+      should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").with(
+        :command => "/usr/bin/defaults write #{domain} #{key} -bool '#{value}'"
+      )
+    end
+  end
+
   context "with a host" do
     let(:params) {
       { :domain => domain,
