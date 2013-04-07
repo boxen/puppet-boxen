@@ -18,6 +18,48 @@ describe 'boxen::osx_defaults' do
       with(:command => "/usr/bin/defaults write #{domain} #{key} '#{value}'")
   end
 
+  context 'boolean handling' do
+    let(:params) {
+      { :domain => domain,
+        :key    => key,
+        :value  => value,
+        :type   => 'boolean',
+      }
+    }
+
+    context 'yes' do
+      let(:value) { 'yes' }
+      it 'converts yes to 1 for checking' do
+        should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+          with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"1\" }')")
+      end
+    end
+
+    context 'no' do
+      let(:value) { 'no' }
+      it 'converts no to 0 for checking' do
+        should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+          with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"0\" }')")
+      end
+    end
+
+    context 'true' do
+      let(:value) { 'true' }
+      it 'converts true to 1 for checking' do
+        should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+          with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"1\" }')")
+      end
+    end
+
+    context 'false' do
+      let(:value) { 'false' }
+      it 'converts false to 0 for checking' do
+        should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+          with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"0\" }')")
+      end
+    end
+  end
+
   context "with a host" do
     let(:params) {
       { :domain => domain,
