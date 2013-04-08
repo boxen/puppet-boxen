@@ -80,7 +80,12 @@ Puppet::Type.type(:package).provide :homebrew,
     else
       # Nothing here? Nothing from before? Yay! It's a normal install.
 
-      run "boxen-install", resource[:name], *install_options
+      if install_options
+        run "install", resource[:name], *install_options
+      else
+        run "boxen-install", resource[:name]
+      end
+
     end
   end
 
