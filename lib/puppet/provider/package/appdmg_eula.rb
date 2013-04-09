@@ -65,7 +65,7 @@ Puppet::Type.type(:package).provide(:appdmg_eula, :parent => Puppet::Provider::P
       if %r{\A[A-Za-z][A-Za-z0-9+\-\.]*://} =~ cached_source
         cached_source = File.join(tmpdir, name)
         begin
-          puts curl "-o", cached_source, "-C", "-", "-k", "-L", "-s", "--url", source
+          curl "-o", cached_source, "-C", "-", "-k", "-L", "-s", "--url", source
           Puppet.debug "Success: curl transfered [#{name}]"
         rescue Puppet::ExecutionFailure
           Puppet.debug "curl did not transfer [#{name}].  Falling back to slower open-uri transfer methods."
