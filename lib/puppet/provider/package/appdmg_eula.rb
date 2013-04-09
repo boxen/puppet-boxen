@@ -59,6 +59,9 @@ Puppet::Type.type(:package).provide(:appdmg_eula, :parent => Puppet::Provider::P
     end
     require 'open-uri'
     require 'facter/util/plist'
+
+    Puppet.notice "By installing this software (#{name}), you acknowledge you have read and accepted its End User License Agreement."
+
     cached_source = source
     tmpdir = Dir.mktmpdir
     begin
