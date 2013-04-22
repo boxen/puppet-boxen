@@ -70,3 +70,5 @@ PLATFORMS
 
 DEPENDENCIES
   cardboard (~> 1.0)
+  octokit
+  rake
