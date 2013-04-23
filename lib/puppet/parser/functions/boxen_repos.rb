@@ -2,14 +2,17 @@ require 'octokit'
 
 module Puppet::Parser::Functions
   newfunction(:boxen_repos, :type => :rvalue) do |args|
+    repos_per_page = 100
+
     repo_count = Octokit.org(:boxen).public_repos
-    pages = (repo_count / 30.0).round
+    pages = (repo_count / repos_per_page.to_f).round
     repos = []
 
+    opts = { :per_page => repos_per_page }
+
     pages.times do |page|
-      Octokit.org_repos(:boxen, :page => (page + 1)).each do |repo|
-        repos << repo.name
-      end
+      opts[:page] = page + 1
+      repos.concat Octokit.org_repos(:boxen, opts).map(&:name)
     end
 
     return repos
