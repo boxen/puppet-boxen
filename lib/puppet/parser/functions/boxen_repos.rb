@@ -15,6 +15,6 @@ module Puppet::Parser::Functions
       repos.concat Octokit.org_repos(:boxen, opts).map(&:name)
     end
 
-    return repos
+    repos
   end
 end
