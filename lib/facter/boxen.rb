@@ -18,8 +18,8 @@ end
 
 facts["luser"]          = config.user
 
-if config.respond_to? :repourl
-  facts["boxen_repo_url_template"] = config.repourl
+if config.respond_to? :repotemplate
+  facts["boxen_repo_url_template"] = config.repotemplate
 else
   facts["boxen_repo_url_template"] = "https://github.com/%s"
 end
