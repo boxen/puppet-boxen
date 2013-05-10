@@ -29,7 +29,7 @@ class boxen::config {
           $envdir,
           $logdir,
           $socketdir]:
-
+    links => follow,
     ensure => directory
   }
 
