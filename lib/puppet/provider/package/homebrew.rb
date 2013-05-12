@@ -2,9 +2,10 @@
 
 require "pathname"
 require "puppet/provider/package"
+require "puppet/util/execution"
 
 Puppet::Type.type(:package).provide :homebrew, :parent => Puppet::Provider::Package do
-  include Puppet::Utils::Execution
+  include Puppet::Util::Execution
 
   # Brew packages aren't really versionable, but there's a difference
   # between the latest release version and HEAD.
