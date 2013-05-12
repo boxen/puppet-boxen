@@ -125,11 +125,20 @@ Puppet::Type.type(:package).provide :homebrew, :parent => Puppet::Provider::Pack
   end
 
   private
+  def homedir_prefix
+    case Facter[:osfamily].value
+    when "Darwin" then "Users"
+    when "Linux" then "home"
+    else
+      raise "unsupported"
+    end
+  end
+
   def command_opts
     @command_opts ||= {
       :combine            => true,
       :custom_environment => {
-        "HOME"     => "/Users/#{Facter[:boxen_user].value}",
+        "HOME"     => "/#{homedir_prefix}/#{Facter[:boxen_user].value}",
         "PATH"     => "#{self.class.home}/bin:/usr/bin:/usr/sbin:/bin:/sbin",
         "CFLAGS"   => "-O2",
         "CPPFLAGS" => "-O2",
