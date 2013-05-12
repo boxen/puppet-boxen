@@ -128,8 +128,9 @@ Puppet::Type.type(:package).provide :homebrew, :parent => Puppet::Provider::Pack
     @command_opts ||= {
       :combine            => true,
       :custom_environment => {
-        "PATH"   => "#{Facter[:boxen_home].value}/homebrew/bin:$PATH",
-        "CFLAGS" => "-O2"
+        "PATH"     => "#{Facter[:boxen_home].value}/homebrew/bin:$PATH",
+        "CFLAGS"   => "-O2",
+        "CPPFLAGS" => "-O2"
       },
       :failonfail         => true,
       :uid                => Facter[:boxen_user].value
