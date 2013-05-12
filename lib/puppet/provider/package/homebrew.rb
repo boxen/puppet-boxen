@@ -69,7 +69,7 @@ Puppet::Type.type(:package).provide :homebrew, :parent => Puppet::Provider::Pack
     else
       # Nothing here? Nothing from before? Yay! It's a normal install.
 
-      if install_options
+      if install_options.any?
         execute [ "brew", "install", @resource[:name], *install_options ].flatten, command_opts
       else
         execute [ "brew", "boxen-install", @resource[:name] ], command_opts
