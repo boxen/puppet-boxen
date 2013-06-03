@@ -29,8 +29,8 @@ class boxen::config {
           $envdir,
           $logdir,
           $socketdir]:
-
-    ensure => directory
+    ensure => directory,
+    links  => follow
   }
 
   file { "${home}/README.md":
