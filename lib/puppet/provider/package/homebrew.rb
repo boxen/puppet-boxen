@@ -1,11 +1,11 @@
-# The `luser` fact MUST be available, it's used by `sudo` when running
-# any `brew` command.
+# The `boxen_user` fact MUST be available
 
 require "pathname"
 require "puppet/provider/package"
+require "puppet/util/execution"
 
-Puppet::Type.type(:package).provide :homebrew,
-  :parent => Puppet::Provider::Package do
+Puppet::Type.type(:package).provide :homebrew, :parent => Puppet::Provider::Package do
+  include Puppet::Util::Execution
 
   # Brew packages aren't really versionable, but there's a difference
   # between the latest release version and HEAD.
@@ -21,16 +21,6 @@ Puppet::Type.type(:package).provide :homebrew,
 
   confine  :operatingsystem => :darwin
 
-  def self.run(*cmds)
-    command = ["sudo", "-E", "-u", Facter[:luser].value, "#{home}/bin/brew", *cmds].flatten.join(' ')
-    output = `#{command}`
-    unless $? == 0
-      fail "Failed running #{command}"
-    end
-
-    output
-  end
-
   def self.active?(name, version)
     current(name) == version
   end
@@ -45,7 +35,7 @@ Puppet::Type.type(:package).provide :homebrew,
     link.exist? && link.realpath.basename.to_s
   end
 
-  def self.simplify(name)
+  def self.simplify name
     name.split("/").last
   end
 
@@ -61,29 +51,29 @@ Puppet::Type.type(:package).provide :homebrew,
   end
 
   def install
-    version = unversioned? ? latest : resource[:ensure]
+    version = unversioned? ? latest : @resource[:ensure]
 
     update_formulas if !version_defined?(version) || version == 'latest'
 
-    if self.class.available? resource[:name], version
+    if self.class.available? @resource[:name], version
       # If the desired version is already installed, just link or
       # switch. Somebody might've activated another version for
       # testing or something like that.
 
-      run :switch, resource[:name], version
+      execute [ "brew", "switch", @resource[:name], version ], command_opts
 
-    elsif self.class.current resource[:name]
+    elsif self.class.current @resource[:name]
       # Okay, so there's a version already active, it's not the right
       # one, and the right one isn't installed. That's an upgrade.
 
-      run "boxen-upgrade", resource[:name]
+      execute [ "brew", "boxen-upgrade", @resource[:name] ], command_opts
     else
       # Nothing here? Nothing from before? Yay! It's a normal install.
 
-      if install_options
-        run "install", resource[:name], *install_options
+      if install_options.any?
+        execute [ "brew", "install", @resource[:name], *install_options ].flatten, command_opts
       else
-        run "boxen-install", resource[:name]
+        execute [ "brew", "boxen-install", @resource[:name] ], command_opts
       end
 
     end
@@ -93,14 +83,14 @@ Puppet::Type.type(:package).provide :homebrew,
     unless self.class.const_defined?(:UPDATED_BREW)
       notice "Updating homebrew formulas"
 
-      run :update rescue nil
+      execute [ "brew", "update" ], command_opts
       self.class.const_set(:UPDATED_BREW, true)
     end
   end
 
   def version_defined? version
-    defined_versions = `#{self.class.home}/bin/brew info #{resource[:name]}`
-    defined_versions = defined_versions.lines.first.strip.split(' ')[2..-1]
+    output = execute([ "brew", "info", @resource[:name] ], command_opts).strip
+    defined_versions = output.lines.first.strip.split(' ')[2..-1]
 
     defined_versions.include? version
   end
@@ -110,39 +100,52 @@ Puppet::Type.type(:package).provide :homebrew,
   end
 
   def latest
-    run("boxen-latest", resource[:name]).strip
+    execute([ "brew", "boxen-latest", @resource[:name] ], command_opts).strip
   end
 
   def query
-    return unless version = self.class.current(resource[:name])
-    { :ensure => version, :name => resource[:name] }
-  end
-
-  def run(*cmds)
-    self.class.run(*cmds)
+    return unless version = self.class.current(@resource[:name])
+    { :ensure => version, :name => @resource[:name] }
   end
 
   def uninstall
-    run :uninstall, "--force", self.class.simplify(resource[:name])
+    execute [ "brew", "uninstall", "--force", "#{simplify @resource[:name]}" ], command_opts
   end
 
   def unversioned?
-    self.class.unversioned? resource[:ensure]
+    self.class.unversioned? @resource[:ensure]
   end
 
   def update
     install
   end
 
+  def simplify name
+    self.class.simplify name
+  end
+
   private
-  def lazy_brew(*args)
-    brew(*args)
-  rescue NoMethodError => e
-    if File.exists? "#{self.class.home}/bin/brew"
-      self.class.commands :brew => "#{home}/bin/brew"
-      brew(*args)
+  def homedir_prefix
+    case Facter[:osfamily].value
+    when "Darwin" then "Users"
+    when "Linux" then "home"
     else
-      raise e
+      raise "unsupported"
     end
+  end
+
+  def command_opts
+    @command_opts ||= {
+      :combine            => true,
+      :custom_environment => {
+        "HOME"     => "/#{homedir_prefix}/#{Facter[:boxen_user].value}",
+        "PATH"     => "#{self.class.home}/bin:/usr/bin:/usr/sbin:/bin:/sbin",
+        "CFLAGS"   => "-O2",
+        "CPPFLAGS" => "-O2",
+        "CXXFLAGS" => "-O2"
+      },
+      :failonfail         => true,
+      :uid                => Facter[:boxen_user].value
+    }
   end
 end
