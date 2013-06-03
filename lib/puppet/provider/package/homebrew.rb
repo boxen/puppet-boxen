@@ -31,7 +31,7 @@ Puppet::Type.type(:package).provide :homebrew, :parent => Puppet::Provider::Pack
   end
 
   def self.current(name)
-    link = Pathname.new "#{home}/Library/LinkedKegs/#{simplify name}"
+    link = Pathname.new "#{home}/opt/#{simplify name}"
     link.exist? && link.realpath.basename.to_s
   end
 
