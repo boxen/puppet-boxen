@@ -4,7 +4,7 @@ Facter.add("root_encrypted") do
   config = Boxen::Config.load
 
   def root_encrypted?
-    system("/usr/sbin/diskutil coreStorage info / > /dev/null 2>&1")
+    system("/usr/bin/fdesetup isactive /")
   end
 
   setcode do
