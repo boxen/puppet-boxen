@@ -6,7 +6,7 @@ class boxen::security {
     domain => 'com.apple.screensaver',
     key    => 'askForPassword',
     value  => 1,
-    user   => $::luser
+    user   => $::boxen_user
   }
 
   boxen::osx_defaults { 'short delay for password dialog on screensaver':
@@ -14,6 +14,6 @@ class boxen::security {
     domain => 'com.apple.screensaver',
     key    => 'askForPasswordDelay',
     value  => 5,
-    user   => $::luser
+    user   => $::boxen_user
   }
 }
