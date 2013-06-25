@@ -2,12 +2,12 @@
 
 class boxen::sudoers {
   sudoers { 'boxen':
-    users    => $::luser,
+    users    => $::boxen_user,
     hosts    => 'ALL',
     commands => [
       '(ALL) NOPASSWD : /bin/mkdir -p /tmp/puppet',
       "/bin/mkdir -p ${::boxen_home}",
-      "/usr/sbin/chown ${::luser}\\:staff ${::boxen_home}",
+      "/usr/sbin/chown ${::boxen_user}\\:staff ${::boxen_home}",
       "${boxen::config::repodir}/bin/puppet",
       '/bin/rm -f /tmp/boxen.log'
     ],
@@ -15,7 +15,7 @@ class boxen::sudoers {
   }
 
   sudoers { 'fdesetup':
-    users    => $::luser,
+    users    => $::boxen_user,
     hosts    => 'ALL',
     commands => [
       '(ALL) NOPASSWD : /usr/bin/fdesetup status',
@@ -25,7 +25,7 @@ class boxen::sudoers {
   }
 
   sudoers { 'launchctl':
-    users    => $::luser,
+    users    => $::boxen_user,
     hosts    => 'ALL',
     commands => [
       '(ALL) NOPASSWD : /bin/launchctl load',
