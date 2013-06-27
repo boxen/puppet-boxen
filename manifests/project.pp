@@ -131,6 +131,8 @@ define boxen::project(
   }
 
   if $mysql {
+    require mysql
+
     $mysql_dbs = $mysql ? {
       true    => ["${name}_development", "${name}_test"],
       default => $mysql,
