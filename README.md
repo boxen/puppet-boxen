@@ -1,4 +1,6 @@
-# Boxen [![Build Status](https://travis-ci.org/boxen/puppet-boxen.png?branch=master)](https://travis-ci.org/boxen/puppet-boxen)
+# Boxen 
+
+[![Build Status](https://travis-ci.org/boxen/puppet-boxen.png?branch=master)](https://travis-ci.org/boxen/puppet-boxen)
 
 The Boxen puppet module for... Boxen.
 
