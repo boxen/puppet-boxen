@@ -5,7 +5,7 @@ Puppet::Type.type(:package).provide :compressed_pkg,
 :parent => Puppet::Provider::Package do
   desc "Installs a compressed .pkg or .mpkg. Supports zip, tar.gz, tar.bz2"
 
-  SOURCE_TYPES = %w(zip tar.gz tar.bz2 tgz tbz)
+  PKG_SOURCE_TYPES = %w(zip tar.gz tar.bz2 tgz tbz)
 
   commands :installer => "/usr/sbin/installer"
   confine  :operatingsystem => :darwin
@@ -111,7 +111,7 @@ Puppet::Type.type(:package).provide :compressed_pkg,
     end
 
     if flavor = @resource[:flavor]
-      unless SOURCE_TYPES.member? flavor
+      unless PKG_SOURCE_TYPES.member? flavor
         self.fail "Unsupported flavor"
       end
     end
