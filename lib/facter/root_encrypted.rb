@@ -4,7 +4,8 @@ Facter.add("root_encrypted") do
   config = Boxen::Config.load
 
   def root_encrypted?
-    system("/usr/bin/fdesetup isactive /")
+    is_active = `/usr/bin/fdesetup isactive ; echo $?`.chomp
+	  is_active == "0" || is_active == "2" ? true : false
   end
 
   setcode do
