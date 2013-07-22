@@ -28,4 +28,8 @@ Dir["#{config.homedir}/config/facts/*.json"].each do |file|
   facts.merge! JSON.parse File.read file
 end
 
-facts.each { |k, v| Facter.add(k) { setcode { v } } }
+facts.each do |k, v|
+  unless Facter.value(k)
+    Facter.add(k) { setcode { v } }
+  end
+end
