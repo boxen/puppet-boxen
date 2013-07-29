@@ -14,7 +14,7 @@ describe 'boxen::osx_defaults' do
   }
 
   it do
-    should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+    should contain_exec("osx_defaults write  #{domain}:#{key}=>'#{value}'").
       with(:command => "/usr/bin/defaults write #{domain} #{key} '#{value}'")
   end
 
@@ -30,7 +30,7 @@ describe 'boxen::osx_defaults' do
     context 'yes' do
       let(:value) { 'yes' }
       it 'converts yes to 1 for checking' do
-        should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+        should contain_exec("osx_defaults write  #{domain}:#{key}=>'#{value}'").
           with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"1\" }')")
       end
     end
@@ -38,7 +38,7 @@ describe 'boxen::osx_defaults' do
     context 'no' do
       let(:value) { 'no' }
       it 'converts no to 0 for checking' do
-        should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+        should contain_exec("osx_defaults write  #{domain}:#{key}=>'#{value}'").
           with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"0\" }')")
       end
     end
@@ -46,7 +46,7 @@ describe 'boxen::osx_defaults' do
     context 'true' do
       let(:value) { 'true' }
       it 'converts true to 1 for checking' do
-        should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+        should contain_exec("osx_defaults write  #{domain}:#{key}=>'#{value}'").
           with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"1\" }')")
       end
     end
@@ -54,7 +54,7 @@ describe 'boxen::osx_defaults' do
     context 'false' do
       let(:value) { 'false' }
       it 'converts false to 0 for checking' do
-        should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+        should contain_exec("osx_defaults write  #{domain}:#{key}=>'#{value}'").
           with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"0\" }')")
       end
     end
@@ -70,7 +70,7 @@ describe 'boxen::osx_defaults' do
     }
 
     it do
-      should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").with(
+      should contain_exec("osx_defaults write  #{domain}:#{key}=>'#{value}'").with(
         :command => "/usr/bin/defaults write #{domain} #{key} -bool '#{value}'"
       )
     end
@@ -89,7 +89,7 @@ describe 'boxen::osx_defaults' do
       let(:host) { 'currentHost' }
 
       it do
-        should contain_exec("osx_defaults write #{host} #{domain}:#{key}=>#{value}").
+        should contain_exec("osx_defaults write #{host} #{domain}:#{key}=>'#{value}'").
           with(:command => "/usr/bin/defaults -currentHost write #{domain} #{key} '#{value}'")
       end
     end
@@ -98,9 +98,39 @@ describe 'boxen::osx_defaults' do
       let(:host) { 'mybox.example.com' }
 
       it do
-        should contain_exec("osx_defaults write #{host} #{domain}:#{key}=>#{value}").
+        should contain_exec("osx_defaults write #{host} #{domain}:#{key}=>'#{value}'").
           with(:command => "/usr/bin/defaults -host #{host} write #{domain} #{key} '#{value}'")
       end
+    end
+  end
+
+  context "with hash value" do
+    let(:params) do
+      { :domain => domain,
+        :key    => key,
+        :type   => 'dict',
+        :value  => { 'x' => 1 } # multiple values => unpredictable order so test may fail
+      }
+    end
+
+    it do
+      should contain_exec("osx_defaults write  #{domain}:#{key}=>'x' '1'").
+        with(:command => "/usr/bin/defaults write #{domain} #{key} -dict 'x' '1'")
+    end
+  end
+
+  context "value is array" do
+    let(:params) do
+      { :domain => domain,
+        :key    => key,
+        :type   => 'dict',
+        :value  => [ 1, 2, 3, 4 ]
+      }
+    end
+
+    it do
+      should contain_exec("osx_defaults write  #{domain}:#{key}=>'1' '2' '3' '4'").
+        with(:command => "/usr/bin/defaults write #{domain} #{key} -dict '1' '2' '3' '4'")
     end
   end
 end
