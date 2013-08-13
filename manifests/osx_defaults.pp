@@ -30,8 +30,8 @@ define boxen::osx_defaults(
       }
 
       $cmd = $type_ ? {
-        undef   => "${defaults_cmd}${host_option} write ${domain} ${key} '${value}'",
-        default => "${defaults_cmd}${host_option} write ${domain} ${key} -${type_} '${value}'"
+        undef   => "${defaults_cmd}${host_option} write ${domain} '${key}' '${value}'",
+        default => "${defaults_cmd}${host_option} write ${domain} '${key}' -${type_} '${value}'"
       }
 
       if ($type_ =~ /^bool/) {
@@ -44,15 +44,15 @@ define boxen::osx_defaults(
       }
       exec { "osx_defaults write ${host} ${domain}:${key}=>${value}":
         command => $cmd,
-        unless  => "${defaults_cmd}${host_option} read ${domain} ${key} && (${defaults_cmd}${host_option} read ${domain} ${key} | awk '{ exit \$0 != \"${checkvalue}\" }')",
+        unless  => "${defaults_cmd}${host_option} read ${domain} '${key}' && (${defaults_cmd}${host_option} read ${domain} '${key}' | awk '{ exit \$0 != \"${checkvalue}\" }')",
         user    => $user
       }
     } # end present
 
     default: {
       exec { "osx_defaults delete ${host} ${domain}:${key}":
-        command => "${defaults_cmd}${host_option} delete ${domain} ${key}",
-        onlyif  => "${defaults_cmd}${host_option} read ${domain} | grep ${key}",
+        command => "${defaults_cmd}${host_option} delete ${domain} '${key}'",
+        onlyif  => "${defaults_cmd}${host_option} read ${domain} | grep '${key}'",
         user    => $user
       }
     } # end default
