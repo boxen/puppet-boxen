@@ -5,7 +5,7 @@ Facter.add("root_encrypted") do
 
   def root_encrypted?
     system("/usr/bin/fdesetup isactive /")
-    [0, 2].include? $?
+    [0, 2].include? $?.exitstatus
   end
 
   setcode do
