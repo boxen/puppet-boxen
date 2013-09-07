@@ -17,7 +17,7 @@ define boxen::osx_defaults(
     undef         => '',
     default       => " -host ${host}"
   }
-  
+
   case $ensure {
     present: {
       if ($domain == undef) or ($key == undef) or ($value == undef) {
