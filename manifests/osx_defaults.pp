@@ -1,13 +1,14 @@
 # Public: Set a system config option with the OS X defaults system
 
 define boxen::osx_defaults(
-  $ensure = 'present',
-  $host   = undef,
-  $domain = undef,
-  $key    = undef,
-  $value  = undef,
-  $user   = undef,
-  $type   = undef,
+  $ensure  = 'present',
+  $host    = undef,
+  $domain  = undef,
+  $key     = undef,
+  $value   = undef,
+  $user    = undef,
+  $type    = undef,
+  $refresh = undef,
 ) {
   $defaults_cmd = '/usr/bin/defaults'
 
@@ -34,6 +35,11 @@ define boxen::osx_defaults(
         default => "${defaults_cmd}${host_option} write ${domain} '${key}' -${type_} '${value}'"
       }
 
+      $refreshonly = $refresh ? {
+        undef   => false,
+        default => $refresh
+      }
+
       if ($type_ =~ /^bool/) {
         $checkvalue = $value ? {
           /(true|yes)/ => '1',
@@ -43,9 +49,10 @@ define boxen::osx_defaults(
         $checkvalue = $value
       }
       exec { "osx_defaults write ${host} ${domain}:${key}=>${value}":
-        command => $cmd,
-        unless  => "${defaults_cmd}${host_option} read ${domain} '${key}' && (${defaults_cmd}${host_option} read ${domain} '${key}' | awk '{ exit \$0 != \"${checkvalue}\" }')",
-        user    => $user
+        command     => $cmd,
+        unless      => "${defaults_cmd}${host_option} read ${domain} '${key}' && (${defaults_cmd}${host_option} read ${domain} '${key}' | awk '{ exit \$0 != \"${checkvalue}\" }')",
+        user        => $user,
+        refreshonly => $refreshonly
       }
     } # end present
 
