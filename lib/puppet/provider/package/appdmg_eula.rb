@@ -26,6 +26,7 @@ Puppet::Type.type(:package).provide(:appdmg_eula, :parent => Puppet::Provider::P
   commands :hdiutil => "/usr/bin/hdiutil"
   commands :curl => "/usr/bin/curl"
   commands :ditto => "/usr/bin/ditto"
+  commands :chown => "/usr/sbin/chown"
 
   # JJM We store a cookie for each installed .app.dmg in /var/db
   def self.instances_by_name
@@ -46,7 +47,9 @@ Puppet::Type.type(:package).provide(:appdmg_eula, :parent => Puppet::Provider::P
 
   def self.installapp(source, name, orig_source)
     appname = File.basename(source);
-    ditto "--rsrc", source, "/Applications/#{appname}"
+    target = "/Applications/#{appname}"
+    ditto "--rsrc", source, "#{target}"
+    chown "-R", "#{Facter[:boxen_user].value}:staff", "#{target}"
     File.open("/var/db/.puppet_appdmg_installed_#{name}", "w") do |t|
       t.print "name: '#{name}'\n"
       t.print "source: '#{orig_source}'\n"
