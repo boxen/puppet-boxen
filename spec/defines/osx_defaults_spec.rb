@@ -27,6 +27,51 @@ describe 'boxen::osx_defaults' do
     end
   end
 
+  context 'with a type' do
+    let(:value)  { '10' }
+    let(:params) {
+      { :domain => domain,
+        :key    => key,
+        :value  => value,
+        :type   => type,
+      }
+    }
+
+    context 'specified in full' do
+      let(:type) { 'integer' }
+      it 'checks the type' do
+        should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+          with(:command => "/usr/bin/defaults write #{domain} '#{key}' -#{type} '#{value}'").
+          with(:unless => "/usr/bin/defaults read #{domain} '#{key}' && (/usr/bin/defaults read #{domain} '#{key}' | awk '{ exit $0 != \"#{value}\" }') && (/usr/bin/defaults read-type #{domain} '#{key}' | awk '{ exit $0 != \"Type is integer\" }')")
+      end
+    end
+
+    context 'specified in short form' do
+      let(:type)  { 'int' }
+      it 'converts to long form checks the type' do
+        should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+          with(:command => "/usr/bin/defaults write #{domain} '#{key}' -#{type} '#{value}'").
+          with(:unless => "/usr/bin/defaults read #{domain} '#{key}' && (/usr/bin/defaults read #{domain} '#{key}' | awk '{ exit $0 != \"#{value}\" }') && (/usr/bin/defaults read-type #{domain} '#{key}' | awk '{ exit $0 != \"Type is integer\" }')")
+      end
+    end
+  end
+
+  context 'without a type' do
+    let(:value)  { '10' }
+    let(:params) {
+      { :domain => domain,
+        :key    => key,
+        :value  => value,
+      }
+    }
+
+    it 'skips checking the type' do
+      should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+        with(:command => "/usr/bin/defaults write #{domain} '#{key}' '#{value}'").
+        with(:unless => "/usr/bin/defaults read #{domain} '#{key}' && (/usr/bin/defaults read #{domain} '#{key}' | awk '{ exit $0 != \"#{value}\" }') && true")
+    end
+  end
+
   context 'boolean handling' do
     let(:params) {
       { :domain => domain,
@@ -40,7 +85,7 @@ describe 'boxen::osx_defaults' do
       let(:value) { 'yes' }
       it 'converts yes to 1 for checking' do
         should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
-          with(:unless => "/usr/bin/defaults read #{domain} '#{key}' && (/usr/bin/defaults read #{domain} '#{key}' | awk '{ exit $0 != \"1\" }')")
+          with(:unless => "/usr/bin/defaults read #{domain} '#{key}' && (/usr/bin/defaults read #{domain} '#{key}' | awk '{ exit $0 != \"1\" }') && (/usr/bin/defaults read-type #{domain} '#{key}' | awk '{ exit $0 != \"Type is boolean\" }')")
       end
     end
 
@@ -48,7 +93,7 @@ describe 'boxen::osx_defaults' do
       let(:value) { 'no' }
       it 'converts no to 0 for checking' do
         should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
-          with(:unless => "/usr/bin/defaults read #{domain} '#{key}' && (/usr/bin/defaults read #{domain} '#{key}' | awk '{ exit $0 != \"0\" }')")
+          with(:unless => "/usr/bin/defaults read #{domain} '#{key}' && (/usr/bin/defaults read #{domain} '#{key}' | awk '{ exit $0 != \"0\" }') && (/usr/bin/defaults read-type #{domain} '#{key}' | awk '{ exit $0 != \"Type is boolean\" }')")
       end
     end
 
@@ -56,7 +101,7 @@ describe 'boxen::osx_defaults' do
       let(:value) { 'true' }
       it 'converts true to 1 for checking' do
         should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
-          with(:unless => "/usr/bin/defaults read #{domain} '#{key}' && (/usr/bin/defaults read #{domain} '#{key}' | awk '{ exit $0 != \"1\" }')")
+          with(:unless => "/usr/bin/defaults read #{domain} '#{key}' && (/usr/bin/defaults read #{domain} '#{key}' | awk '{ exit $0 != \"1\" }') && (/usr/bin/defaults read-type #{domain} '#{key}' | awk '{ exit $0 != \"Type is boolean\" }')")
       end
     end
 
@@ -64,7 +109,7 @@ describe 'boxen::osx_defaults' do
       let(:value) { 'false' }
       it 'converts false to 0 for checking' do
         should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
-          with(:unless => "/usr/bin/defaults read #{domain} '#{key}' && (/usr/bin/defaults read #{domain} '#{key}' | awk '{ exit $0 != \"0\" }')")
+          with(:unless => "/usr/bin/defaults read #{domain} '#{key}' && (/usr/bin/defaults read #{domain} '#{key}' | awk '{ exit $0 != \"0\" }') && (/usr/bin/defaults read-type #{domain} '#{key}' | awk '{ exit $0 != \"Type is boolean\" }')")
       end
     end
   end

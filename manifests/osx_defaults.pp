@@ -34,6 +34,17 @@ define boxen::osx_defaults(
         default => "${defaults_cmd}${host_option} write ${domain} '${key}' -${type_} '${value}'"
       }
 
+      $checktype = $type_ ? {
+        /^int$/  => 'integer',
+        /^bool$/ => 'boolean',
+        default  => $type_
+      }
+
+      $checktype_cmd = $type_ ? {
+        undef   => true,
+        default => "(${defaults_cmd}${host_option} read-type ${domain} '${key}' | awk '{ exit \$0 != \"Type is ${checktype}\" }')"
+      }
+
       if ($type_ =~ /^bool/) {
         $checkvalue = $value ? {
           /(true|yes)/ => '1',
@@ -44,7 +55,7 @@ define boxen::osx_defaults(
       }
       exec { "osx_defaults write ${host} ${domain}:${key}=>${value}":
         command => $cmd,
-        unless  => "${defaults_cmd}${host_option} read ${domain} '${key}' && (${defaults_cmd}${host_option} read ${domain} '${key}' | awk '{ exit \$0 != \"${checkvalue}\" }')",
+        unless  => "${defaults_cmd}${host_option} read ${domain} '${key}' && (${defaults_cmd}${host_option} read ${domain} '${key}' | awk '{ exit \$0 != \"${checkvalue}\" }') && ${checktype_cmd}",
         user    => $user
       }
     } # end present
