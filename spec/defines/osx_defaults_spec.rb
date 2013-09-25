@@ -50,6 +50,48 @@ describe 'boxen::osx_defaults' do
     end
   end
 
+  context 'with a type' do
+    let(:value)  { '10' }
+    let(:params) {
+      { :domain => domain,
+        :key    => key,
+        :value  => value,
+        :type   => type,
+      }
+    }
+
+    context 'specified in full' do
+      let(:type) { 'integer' }
+      it 'checks the type' do
+        should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+          with(:unless => %Q[/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != "#{value}" }') && (/usr/bin/defaults read-type #{domain} #{key} | awk '/^Type is / { exit $3 != "integer" } { exit 1 }')])
+      end
+    end
+
+    context 'specified in short form' do
+      let(:type)  { 'int' }
+      it 'checks the long form of the type' do
+        should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+          with(:unless => %Q[/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != "#{value}" }') && (/usr/bin/defaults read-type #{domain} #{key} | awk '/^Type is / { exit $3 != "integer" } { exit 1 }')])
+      end
+    end
+  end
+
+  context 'without a type' do
+    let(:value)  { '10' }
+    let(:params) {
+      { :domain => domain,
+        :key    => key,
+        :value  => value,
+      }
+    }
+
+    it 'skips checking the type' do
+      should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+        with(:unless => %Q[/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != "#{value}" }')])
+    end
+  end
+
   context 'boolean handling' do
     let(:params) {
       { :domain => domain,
@@ -58,12 +100,13 @@ describe 'boxen::osx_defaults' do
         :type   => 'boolean',
       }
     }
+    let(:boolean_typecheck) { %Q[(/usr/bin/defaults read-type #{domain} #{key} | awk '/^Type is / { exit $3 != "boolean" } { exit 1 }')] }
 
     context 'yes' do
       let(:value) { 'yes' }
       it 'converts yes to 1 for checking' do
         should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
-          with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"1\" }')")
+          with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"1\" }') && #{boolean_typecheck}")
       end
     end
 
@@ -71,7 +114,7 @@ describe 'boxen::osx_defaults' do
       let(:value) { 'no' }
       it 'converts no to 0 for checking' do
         should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
-          with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"0\" }')")
+          with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"0\" }') && #{boolean_typecheck}")
       end
     end
 
@@ -79,7 +122,7 @@ describe 'boxen::osx_defaults' do
       let(:value) { 'true' }
       it 'converts true to 1 for checking' do
         should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
-          with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"1\" }')")
+          with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"1\" }') && #{boolean_typecheck}")
       end
     end
 
@@ -87,7 +130,7 @@ describe 'boxen::osx_defaults' do
       let(:value) { 'false' }
       it 'converts false to 0 for checking' do
         should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
-          with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"0\" }')")
+          with(:unless => "/usr/bin/defaults read #{domain} #{key} && (/usr/bin/defaults read #{domain} #{key} | awk '{ exit $0 != \"0\" }') && #{boolean_typecheck}")
       end
     end
   end

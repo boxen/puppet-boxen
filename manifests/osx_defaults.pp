@@ -43,6 +43,18 @@ define boxen::osx_defaults(
 
       $read_cmd = shellquote($default_cmds, 'read', $domain, $key)
 
+      $readtype_cmd = shellquote($default_cmds, 'read-type', $domain, $key)
+      $checktype = $type_ ? {
+        /^bool$/ => 'boolean',
+        /^int$/  => 'integer',
+        /^dict$/ => 'dictionary',
+        default  => $type_
+      }
+      $checktype_cmd = $type_ ? {
+        undef   => '',
+        default => " && (${readtype_cmd} | awk '/^Type is / { exit \$3 != \"${checktype}\" } { exit 1 }')"
+      }
+
       $refreshonly_ = $refreshonly ? {
         undef   => false,
         default => true,
@@ -50,7 +62,7 @@ define boxen::osx_defaults(
 
       exec { "osx_defaults write ${host} ${domain}:${key}=>${value}":
         command     => $write_cmd,
-        unless      => "${read_cmd} && (${read_cmd} | awk '{ exit \$0 != \"${checkvalue}\" }')",
+        unless      => "${read_cmd} && (${read_cmd} | awk '{ exit \$0 != \"${checkvalue}\" }')${checktype_cmd}",
         user        => $user,
         refreshonly => $refreshonly_
       }
