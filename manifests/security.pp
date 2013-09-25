@@ -17,6 +17,7 @@ class boxen::security(
     domain => 'com.apple.screensaver',
     key    => 'askForPasswordDelay',
     value  => $screensaver_delay_sec,
+    type   => 'float',
     user   => $::boxen_user
   }
 }
