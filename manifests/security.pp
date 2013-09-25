@@ -6,6 +6,7 @@ class boxen::security {
     domain => 'com.apple.screensaver',
     key    => 'askForPassword',
     value  => 1,
+    type   => 'int',
     user   => $::boxen_user
   }
 
@@ -14,6 +15,7 @@ class boxen::security {
     domain => 'com.apple.screensaver',
     key    => 'askForPasswordDelay',
     value  => 5,
+    type   => 'float',
     user   => $::boxen_user
   }
 }
