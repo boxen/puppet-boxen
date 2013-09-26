@@ -1,3 +1,5 @@
+require 'json'
+
 Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
   commands :launchctl => "/bin/launchctl",
             :plutil   => "/usr/bin/plutil",
@@ -9,10 +11,11 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
   mk_resource_methods
 
   LAUNCHD_DIRS = [
+    "~/Library/LaunchAgents",
     "/Library/LaunchAgents",
     "/Library/LaunchDaemons",
     "/System/Library/LaunchAgents",
-    "/System/Library/LaunchDaemons"
+    "/System/Library/LaunchDaemons",
   ]
 
   def restart
@@ -105,8 +108,8 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
     return @plist_file if defined? @plist_file
 
     name = "#{resource[:name]}.plist"
-    glob = "{" + LAUNCHD_DIRS.join(",") + "}/#{name}"
+    pattern = "{" + LAUNCHD_DIRS.join(",") + "}/#{name}"
 
-    @plist_file = Dir[glob].first.to_s or raise "Can't find #{name}."
+    @plist_file = Dir.glob(pattern).first.to_s or raise "Can't find #{name}."
   end
 end
