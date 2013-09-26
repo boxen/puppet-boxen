@@ -1,11 +1,15 @@
 # Private: Includes a user's personal manifest based on their github username
 
 class boxen::personal {
-  $manifests         = "${boxen::config::repodir}/modules/people/manifests"
-  $login             = regsubst($::github_login, '-','_', 'G')
-  $personal_manifest = "${manifests}/${login}.pp"
+  include boxen::config
 
-  if file_exists($personal_manifest) {
+  $manifests = "${boxen::config::repodir}/modules/people/manifests"
+  $login     = regsubst($boxen::config::login, '-','_', 'G')
+
+  if $login != $boxen::config::login {
+    notice("Changed boxen::personal login to ${login}")
+  }
+  if file_exists("${manifests}/${login}.pp") {
     include "people::${login}"
   }
 }

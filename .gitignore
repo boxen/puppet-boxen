@@ -3,5 +3,7 @@
 /spec/fixtures/.librarian
 /spec/fixtures/.tmp
 /spec/fixtures/Puppetfile.lock
-/spec/fixtures/modules
 /spec/fixtures/vendor
+/spec/fixtures/modules
+!/spec/fixtures/modules/projects
+!/spec/fixtures/modules/people
