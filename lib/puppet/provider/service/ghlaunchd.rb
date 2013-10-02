@@ -3,7 +3,8 @@ require 'json'
 Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
   commands :launchctl => "/bin/launchctl",
             :plutil   => "/usr/bin/plutil",
-            :rm       => "/bin/rm"
+            :rm       => "/bin/rm",
+            :sudo     => "/usr/bin/sudo"
 
   confine :operatingsystem => :darwin
 
@@ -23,8 +24,20 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
     start
   end
 
+  def user
+    config['UserName'] if config['UserName'] && config['UserName'] != 'root'
+  end
+
+  def maybe_sudo_launchctl(*args)
+    if user then
+      sudo('-u', user, command(:launchctl), *args)
+    else
+      launchctl(*args)
+    end
+  end
+
   def status
-    service = launchctl(:list, resource[:name]) rescue nil
+    service = maybe_sudo_launchctl(:list, resource[:name]) rescue nil
     running  = service.include?("PID") rescue nil
     running |= service['OnDemand'] rescue nil
     running ? :running : :stopped
@@ -40,9 +53,9 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
 
   def start
     return false if plist_file.to_s.empty?
-    launchctl :load, "-w", plist_file
+    maybe_sudo_launchctl :load, "-w", plist_file
     if config['inetdCompatibility'].nil?
-      launchctl :start, resource[:name]
+      maybe_sudo_launchctl :start, resource[:name]
     end
   rescue => e
     if e.message =~ /Can't find #{name}/
@@ -54,7 +67,7 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
 
   def stop
     return false if plist_file.to_s.empty?
-    launchctl :unload, "-w", plist_file
+    maybe_sudo_launchctl :unload, "-w", plist_file
   rescue => e
     if e.message =~ /Can't find #{name}/
       true
