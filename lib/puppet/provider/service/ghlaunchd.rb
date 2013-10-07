@@ -11,26 +11,32 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
   has_feature :enableable
   mk_resource_methods
 
-  LAUNCHD_DIRS = [
-    "~/Library/LaunchAgents",
-    "/Library/LaunchAgents",
-    "/Library/LaunchDaemons",
-    "/System/Library/LaunchAgents",
-    "/System/Library/LaunchDaemons",
-  ]
+  def boxen_user
+    Facter.fact(:boxen_user).value
+  end
+
+  def run_as_boxen_user?
+    plist_file.include?("/Library/LaunchAgents") && !boxen_user.empty?
+  end
+
+  def launchd_dirs
+    [
+      "/Users/#{boxen_user}/Library/LaunchAgents",
+      "/Library/LaunchAgents",
+      "/Library/LaunchDaemons",
+      "/System/Library/LaunchAgents",
+      "/System/Library/LaunchDaemons",
+    ]
+  end
 
   def restart
     stop
     start
   end
 
-  def user
-    config['UserName'] if config['UserName'] && config['UserName'] != 'root'
-  end
-
   def maybe_sudo_launchctl(*args)
-    if user then
-      sudo('-u', user, command(:launchctl), *args)
+    if run_as_boxen_user? then
+      sudo('-u', boxen_user, command(:launchctl), *args)
     else
       launchctl(*args)
     end
@@ -115,13 +121,13 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
   end
 
   # The launchd `.plist` file for this service, which must exist in
-  # one of the `LAUNCHD_DIRS`. Raises if the file can't be found.
+  # one of the `launchd_dirs`. Raises if the file can't be found.
 
   def plist_file
     return @plist_file if defined? @plist_file
 
     name = "#{resource[:name]}.plist"
-    pattern = "{" + LAUNCHD_DIRS.join(",") + "}/#{name}"
+    pattern = "{" + launchd_dirs.join(",") + "}/#{name}"
 
     @plist_file = Dir.glob(pattern).first.to_s or raise "Can't find #{name}."
   end

@@ -9,30 +9,30 @@ describe Puppet::Type.type(:service).provider(:ghlaunchd) do
 
   describe "start" do
 
-    it "should start a service with a plist file" do
+    it "should start a launch agent with sudo" do
       Dir.stubs(:glob).returns(['/Library/LaunchAgents/some.vendor.service.plist'])
-        
+      Facter.stubs(:fact).with(:boxen_user).returns(stub(:value => 'some_user'))
+
       subject.stubs(:plutil).returns('{}')
-      subject.expects(:launchctl).with(:load, '-w', '/Library/LaunchAgents/some.vendor.service.plist')
-      subject.expects(:launchctl).with(:start, 'some.vendor.service')
+      subject.stubs(:command).with(:launchctl).returns('/bin/launchctl')
+      subject.expects(:sudo).with('-u', 'some_user', '/bin/launchctl', :load, '-w', '/Library/LaunchAgents/some.vendor.service.plist')
+      subject.expects(:sudo).with('-u', 'some_user', '/bin/launchctl', :start, 'some.vendor.service')
       subject.start
     end
 
-    it "should not start a service without a plist file" do
+    it "should not start without a plist file" do
       Dir.stubs(:glob).returns([])
 
       subject.expects(:launchctl).never()
       subject.start.should == false
     end
 
-    it "should sudo to user if user is defined" do
-      subject.stubs(:plutil).returns('{}')
-      Dir.stubs(:glob).returns(['/Library/LaunchAgents/some.vendor.service.plist'])
+    it "should start a launch deamon without sudo" do
+      Dir.stubs(:glob).returns(['/Library/LaunchDeamons/some.vendor.service.plist'])
 
-      subject.stubs(:user).returns('some_user')
-      subject.stubs(:command).with(:launchctl).returns('/bin/launchctl')
-      subject.expects(:sudo).with('-u', 'some_user', '/bin/launchctl', :load, '-w', '/Library/LaunchAgents/some.vendor.service.plist')
-      subject.expects(:sudo).with('-u', 'some_user', '/bin/launchctl', :start, 'some.vendor.service')
+      subject.stubs(:plutil).returns('{}')
+      subject.expects(:launchctl).with(:load, '-w', '/Library/LaunchDeamons/some.vendor.service.plist')
+      subject.expects(:launchctl).with(:start, 'some.vendor.service')
       subject.start
     end
   end
