@@ -57,10 +57,14 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
     end
   end
 
+  def start_after_load?
+    config['inetdCompatibility'].nil?
+  end
+
   def start
     return false if plist_file.to_s.empty?
     maybe_sudo_launchctl :load, "-w", plist_file
-    if config['inetdCompatibility'].nil?
+    if start_after_load?
       maybe_sudo_launchctl :start, resource[:name]
     end
   rescue => e

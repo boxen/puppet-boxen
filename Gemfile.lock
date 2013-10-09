@@ -65,5 +65,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  json
   cardboard (~> 2.1)
   puppet (< 3.4)
