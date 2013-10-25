@@ -56,6 +56,10 @@
 #       If given a string, ensures that ruby version is installed.
 #       Also creates "${dir}/.ruby-version" with content being this value.
 #
+#     phantomjs =>
+#       If given a string, ensures that phantomjs version is installed.
+#       Also creates "${dir}/.phantom-version" with content being this value.
+#
 #     source =>
 #       Repo to clone project from. REQUIRED. Supports shorthand <user>/<repo>.
 #
@@ -78,6 +82,7 @@ define boxen::project(
   $postgresql    = undef,
   $redis         = undef,
   $ruby          = undef,
+  $phantomjs     = undef,
   $server_name   = "${name}.dev",
 ) {
   include boxen::config
@@ -180,6 +185,13 @@ define boxen::project(
   if $ruby {
     ruby::local { $repo_dir:
       version => $ruby,
+      require => Repository[$repo_dir]
+    }
+  }
+
+  if $phantomjs {
+    phantomjs::local { $repo_dir:
+      version => $phantomjs,
       require => Repository[$repo_dir]
     }
   }
