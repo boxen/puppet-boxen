@@ -3,7 +3,6 @@ require "boxen/config"
 
 config      = Boxen::Config.load
 facts       = {}
-factsdir    = "#{config.homedir}/config/facts"
 dot_boxen   = "#{ENV['HOME']}/.boxen"
 user_config = "#{dot_boxen}/config.json"
 
