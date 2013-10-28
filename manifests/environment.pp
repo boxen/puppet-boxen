@@ -19,4 +19,13 @@ class boxen::environment {
   include boxen::sudoers
 
   include_projects_from_boxen_cli()
+
+  boxen::env_script {
+    'config':
+      content  => template('boxen/config.sh.erb'),
+      priority => 'highest' ;
+    'gh_creds':
+      content  => template('boxen/gh_creds.sh.erb'),
+      priority => 'higher' ;
+  }
 }

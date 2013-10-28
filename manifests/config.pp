@@ -42,12 +42,8 @@ class boxen::config {
     mode    => '0755',
   }
 
-  file { "${envdir}/config.sh":
-    content => template('boxen/config.sh.erb')
-  }
-
-  file { "${envdir}/gh_creds.sh":
-    content => template('boxen/gh_creds.sh.erb')
+  file { ["${envdir}/config.sh", "${envdir}/gh_creds.sh"]:
+    ensure => absent,
   }
 
   group { 'puppet':
