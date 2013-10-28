@@ -18,7 +18,7 @@ define boxen::env_script(
 ) {
 
   if $source == undef and $content == undef {
-    fail("One of source or content must not be undef!")
+    fail('One of source or content must not be undef!')
   }
 
   $real_priority = $priority ? {
@@ -38,5 +38,4 @@ define boxen::env_script(
     source  => $source,
     content => $content,
   }
-
 }
