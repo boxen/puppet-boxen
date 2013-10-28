@@ -1,3 +1,14 @@
+# Public: install a boxen environment script
+# with the given priority.
+#
+# Usage:
+#
+#   boxen::env_script {
+#    'config':
+#      content  => template('boxen/config.sh.erb'),
+#      priority => 'highest';
+#   }
+
 define boxen::env_script(
   $ensure     = 'present',
   $scriptname = $name,
