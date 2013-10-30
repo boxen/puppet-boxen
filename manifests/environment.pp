@@ -27,10 +27,16 @@ class boxen::environment(
     default => absent,
   }
 
-  boxen::env_script { 'relative_bin_on_path':
-    ensure   => $relative_bin_on_path_ensure,
-    source   => 'puppet:///modules/boxen/relative_bin_on_path.sh',
-    priority => 'highest',
+  boxen::env_script {
+    'config':
+      content  => template('boxen/config.sh.erb'),
+      priority => 'highest' ;
+    'gh_creds':
+      content  => template('boxen/gh_creds.sh.erb'),
+      priority => 'higher' ;
+    'relative_bin_on_path':
+      ensure   => $relative_bin_on_path_ensure,
+      source   => 'puppet:///modules/boxen/relative_bin_on_path.sh',
+      priority => 'highest' ;
   }
-
 }
