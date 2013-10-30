@@ -37,6 +37,6 @@ class boxen::environment(
     'relative_bin_on_path':
       ensure   => $relative_bin_on_path_ensure,
       source   => 'puppet:///modules/boxen/relative_bin_on_path.sh',
-      priority => 'highest' ;
+      priority => 'lowest' ;
   }
 }
