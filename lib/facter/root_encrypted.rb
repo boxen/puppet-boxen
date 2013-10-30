@@ -4,7 +4,7 @@ Facter.add("root_encrypted") do
   config = Boxen::Config.load
 
   def root_encrypted?
-    system("/usr/bin/fdesetup isactive /")
+    system("/usr/bin/fdesetup isactive / >/dev/null")
     [0, 2].include? $?.exitstatus
   end
 
