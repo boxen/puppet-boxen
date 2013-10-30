@@ -5,7 +5,7 @@
 #   include boxen::environment
 
 class boxen::environment(
-  $relative_bin_on_path == true,
+  $relative_bin_on_path = true,
 ) {
   # must be run very early
   require boxen::config
