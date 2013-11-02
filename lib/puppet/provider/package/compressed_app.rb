@@ -41,7 +41,7 @@ Puppet::Type.type(:package).provide :compressed_app,
                   when source =~ /\.tbz$/i
                     'tbz'
                   else
-                    self.fail "Source must be one of .zip, .tar.gz, .tgz, .tar.bz2, .tbz"
+                    fail "Source must be one of .zip, .tar.gz, .tgz, .tar.bz2, .tbz"
                   end
 
 
@@ -104,16 +104,16 @@ Puppet::Type.type(:package).provide :compressed_app,
 
   def install
     unless source = @resource[:source]
-      self.fail "OS X compressed apps must specify a package source"
+      fail "OS X compressed apps must specify a package source"
     end
 
     unless name = @resource[:name]
-      self.fail "OS X compressed apps must specify a package name"
+      fail "OS X compressed apps must specify a package name"
     end
 
     if flavor = @resource[:flavor]
       unless SOURCE_TYPES.member? flavor
-        self.fail "Unsupported flavor"
+        fail "Unsupported flavor"
       end
     end
 
