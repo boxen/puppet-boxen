@@ -1,3 +1,14 @@
+# Public: install a boxen environment script
+# with the given priority.
+#
+# Usage:
+#
+#   boxen::env_script {
+#    'config':
+#      content  => template('boxen/config.sh.erb'),
+#      priority => 'highest';
+#   }
+
 define boxen::env_script(
   $ensure     = 'present',
   $scriptname = $name,
@@ -7,7 +18,7 @@ define boxen::env_script(
 ) {
 
   if $source == undef and $content == undef {
-    fail("One of source or content must not be undef!")
+    fail('One of source or content must not be undef!')
   }
 
   $real_priority = $priority ? {
@@ -28,5 +39,4 @@ define boxen::env_script(
     source  => $source,
     content => $content,
   }
-
 }
