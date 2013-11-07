@@ -111,7 +111,7 @@ Puppet::Type.type(:package).provide(:appdmg_eula, :parent => Puppet::Provider::P
         end
       end
     ensure
-      FileUtils.remove_entry_secure(tmpdir, force=true)
+      FileUtils.remove_entry_secure(tmpdir)
     end
   end
 
