@@ -36,8 +36,8 @@ define boxen::osx_defaults(
       }
 
       $write_cmd = $type_ ? {
-        undef   => shellquote($default_cmds, 'write', $domain, $key, $value),
-        default => shellquote($default_cmds, 'write', $domain, $key, "-${type_}", $value)
+        undef   => shellquote($default_cmds, 'write', $domain, $key, "${value}"),
+        default => shellquote($default_cmds, 'write', $domain, $key, "-${type_}", "${value}")
       }
 
       $read_cmd = shellquote($default_cmds, 'read', $domain, $key)
