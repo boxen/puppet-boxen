@@ -32,7 +32,7 @@ Puppet::Type.type(:package).provide :compressed_app,
   end
 
   def query
-    if File.exists?("/var/db/.puppet_compressed_app_installed_#{@resource[:name]}")
+    if File.exists?(receipt_path)
       {
         :name   => @resource[:name],
         :ensure => :installed
@@ -69,7 +69,7 @@ Puppet::Type.type(:package).provide :compressed_app,
     chown "-R", "#{Facter[:boxen_user].value}:admin",
       "/Applications/#{@resource[:name]}.app", :uid => 'root'
 
-    File.open("/var/db/.puppet_compressed_app_installed_#{@resource[:name]}", "w") do |t|
+    File.open(receipt_path, "w") do |t|
       t.print "name: '#{@resource[:name]}'\n"
       t.print "source: '#{source}'\n"
     end
@@ -77,7 +77,7 @@ Puppet::Type.type(:package).provide :compressed_app,
 
   def uninstall
     rm "-rf", "/Applications/#{@resource[:name]}", :uid => 'root'
-    rm "-f", "/var/db/.puppet_compressed_app_installed_#{@resource[:name]}"
+    rm "-f", receipt_path
   end
 
 private
@@ -90,6 +90,10 @@ private
 
   def cached_path
     "/opt/boxen/cache/#{@resource[:name]}.app.#{source_type}"
+  end
+
+  def receipt_path
+    "/var/db/.puppet_compressed_app_installed_#{@resource[:name]}"
   end
 
 end
