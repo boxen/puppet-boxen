@@ -5,7 +5,7 @@ Puppet::Type.type(:package).provide :compressed_app,
 :parent => Puppet::Provider::Package do
   desc "Installs a compressed .app. Supports zip, tar.gz, tar.bz2"
 
-  SOURCE_TYPES = %w(zip tar.gz tar.bz2 tgz tbz)
+  SOURCE_TYPES = %w(zip tgz tar.gz tbz tbz2 tar.bz2)
 
   confine  :operatingsystem => :darwin
 
@@ -62,7 +62,7 @@ Puppet::Type.type(:package).provide :compressed_app,
       ditto "-xk", cached_path, "/Applications", :uid => 'root'
     when 'tar.gz', 'tgz'
       tar "-zxf", cached_path, "-C", "/Applications", :uid => 'root'
-    when 'tar.bz2', 'tbz'
+    when 'tar.bz2', 'tbz', 'tbz2'
       tar "-jxf", cached_path, "-C", "/Applications", :uid => 'root'
     end
 
