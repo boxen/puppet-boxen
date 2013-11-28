@@ -58,10 +58,6 @@ Puppet::Type.type(:package).provide :compressed_app,
     end
   end
 
-  def self.uninstall_compressed_app(name)
-    rm "-rf", "/Applications/#{name}", :uid => 'root'
-    rm "-f", "/var/db/.puppet_compressed_app_installed_#{name}"
-  end
 
   def query
     if File.exists?("/var/db/.puppet_compressed_app_installed_#{@resource[:name]}")
@@ -91,7 +87,8 @@ Puppet::Type.type(:package).provide :compressed_app,
   end
 
   def uninstall
-    self.class.uninstall_compressed_app @resource[:name]
+    rm "-rf", "/Applications/#{@resource[:name]}", :uid => 'root'
+    rm "-f", "/var/db/.puppet_compressed_app_installed_#{@resource[:name]}"
   end
 
   def cached_path
