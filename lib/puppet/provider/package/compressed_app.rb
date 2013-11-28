@@ -9,7 +9,11 @@ Puppet::Type.type(:package).provide :compressed_app,
 
   confine  :operatingsystem => :darwin
 
+  commands :curl  => "/usr/bin/curl"
   commands :ditto => "/usr/bin/ditto"
+  commands :tar   => "/usr/bin/tar"
+  commands :chown => "/usr/sbin/chown"
+  commands :rm    => "/bin/rm"
 
   def self.instances_by_name
     Dir.entries("/var/db").find_all { |f|
@@ -28,55 +32,25 @@ Puppet::Type.type(:package).provide :compressed_app,
   end
 
   def self.install_compressed_app(name, source, flavor = nil)
+    source_type = flavor ||
+      source.match(/\.(zip|tgz|tbz|tar\.gz|tar\.bz)$/i){|m| m[0] } ||
+      self.fail("Source must be .zip, .tar.gz, .tgz, .tar.bz2, or .tbz")
+
     FileUtils.mkdir_p '/opt/boxen/cache'
-    source_type = case
-                  when flavor
-                    flavor
-                  when source =~ /\.zip$/i
-                    'zip'
-                  when source =~ /\.tar\.gz$/i
-                    'tar.gz'
-                  when source =~ /\.tgz$/i
-                    'tgz'
-                  when source =~ /\.tar\.bz2$/i
-                    'tar.bz2'
-                  when source =~ /\.tbz$/i
-                    'tbz'
-                  else
-                    self.fail "Source must be one of .zip, .tar.gz, .tgz, .tar.bz2, .tbz"
-                  end
-
-
-    execute "curl '#{source}' -L -q -o '/opt/boxen/cache/#{name}.app.#{source_type}'"
-    execute "rm -rf '/Applications/#{name}.app'", :uid => 'root'
+    curl source, "-Lqo", cached_path
+    rm "-rf", "/Applications/#{name}.app", :uid => 'root'
 
     case source_type
     when 'zip'
-      ditto "-xk", cached_source, "/Applications", :uid => 'root'
+      ditto "-xk", cached_path, "/Applications", :uid => 'root'
     when 'tar.gz', 'tgz'
-      execute [
-        "/usr/bin/tar",
-        "-zxf",
-        "'/opt/boxen/cache/#{name}.app.#{source_type}'",
-        "-C",
-        "/Applications"
-      ].join(' '), :uid => 'root'
+      tar "-zxf", cached_path, "-C", "/Applications", :uid => 'root'
     when 'tar.bz2', 'tbz'
-      execute [
-        "/usr/bin/tar",
-        "-jxf",
-        "'/opt/boxen/cache/#{name}.app.#{source_type}'",
-        "-C",
-        "/Applications"
-      ].join(' '), :uid => 'root'
+      tar "-jxf", cached_path, "-C", "/Applications", :uid => 'root'
     end
 
-    execute [
-      "/usr/sbin/chown",
-      "-R",
-      "#{Facter[:boxen_user].value}:admin",
-      "/Applications/#{name}.app"
-    ].join(" "), :uid => 'root'
+    chown "-R", "#{Facter[:boxen_user].value}:admin",
+      "/Applications/#{name}.app", :uid => 'root'
 
     File.open("/var/db/.puppet_compressed_app_installed_#{name}", "w") do |t|
       t.print "name: '#{name}'\n"
@@ -85,8 +59,8 @@ Puppet::Type.type(:package).provide :compressed_app,
   end
 
   def self.uninstall_compressed_app(name)
-    execute "rm -rf '/Applications/#{name}'", :uid => 'root'
-    execute "rm -f '/var/db/.puppet_compressed_app_installed_#{name}'"
+    rm "-rf", "/Applications/#{name}", :uid => 'root'
+    rm "-f", "/var/db/.puppet_compressed_app_installed_#{name}"
   end
 
   def query
@@ -119,4 +93,9 @@ Puppet::Type.type(:package).provide :compressed_app,
   def uninstall
     self.class.uninstall_compressed_app @resource[:name]
   end
+
+  def cached_path
+    "/opt/boxen/cache/#{@resource[:name]}.app.#{source_type}"
+  end
+
 end
