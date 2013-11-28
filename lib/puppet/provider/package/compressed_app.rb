@@ -55,7 +55,7 @@ Puppet::Type.type(:package).provide :compressed_app,
 
     FileUtils.mkdir_p '/opt/boxen/cache'
     curl @resource[:source], "-Lqo", cached_path
-    rm "-rf", "/Applications/#{@resource[:name]}.app", :uid => 'root'
+    rm "-rf", app_path, :uid => 'root'
 
     case source_type
     when 'zip'
@@ -66,8 +66,7 @@ Puppet::Type.type(:package).provide :compressed_app,
       tar "-jxf", cached_path, "-C", "/Applications", :uid => 'root'
     end
 
-    chown "-R", "#{Facter[:boxen_user].value}:admin",
-      "/Applications/#{@resource[:name]}.app", :uid => 'root'
+    chown "-R", "#{Facter[:boxen_user].value}:admin", app_path, :uid => 'root'
 
     File.open(receipt_path, "w") do |t|
       t.print "name: '#{@resource[:name]}'\n"
@@ -76,7 +75,7 @@ Puppet::Type.type(:package).provide :compressed_app,
   end
 
   def uninstall
-    rm "-rf", "/Applications/#{@resource[:name]}", :uid => 'root'
+    rm "-rf", app_path, :uid => 'root'
     rm "-f", receipt_path
   end
 
@@ -84,8 +83,12 @@ private
 
   def source_type
     @resource[:flavor] ||
-      @resource[:source].match(/\.(zip|tgz|tbz|tar\.gz|tar\.bz)$/i){|m| m[0] } ||
+      @resource[:source].match(/\.(#{SOURCE_TYPES.join('|')})$/i){|m| m[0] } ||
       self.fail("Source must be .zip, .tar.gz, .tgz, .tar.bz2, or .tbz")
+  end
+
+  def app_path
+    "/Applications/#{@resource[:name]}.app"
   end
 
   def cached_path
