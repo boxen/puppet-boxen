@@ -31,14 +31,35 @@ Puppet::Type.type(:package).provide :compressed_app,
     end
   end
 
-  def self.install_compressed_app(name, source, flavor = nil)
-    source_type = flavor ||
-      source.match(/\.(zip|tgz|tbz|tar\.gz|tar\.bz)$/i){|m| m[0] } ||
+  def query
+    if File.exists?("/var/db/.puppet_compressed_app_installed_#{@resource[:name]}")
+      {
+        :name   => @resource[:name],
+        :ensure => :installed
+      }
+    end
+  end
+
+  def install
+    unless @resource[:source]
+      self.fail "OS X compressed apps must specify a package source"
+    end
+
+    unless SOURCE_TYPES.member? @resource[:flavor]
+      self.fail "Unsupported flavor"
+    end
+
+    unless @resource[:name]
+      self.fail "OS X compressed apps must specify a package name"
+    end
+
+    source_type = @resource[:flavor] ||
+      @resource[:source].match(/\.(zip|tgz|tbz|tar\.gz|tar\.bz)$/i){|m| m[0] } ||
       self.fail("Source must be .zip, .tar.gz, .tgz, .tar.bz2, or .tbz")
 
     FileUtils.mkdir_p '/opt/boxen/cache'
-    curl source, "-Lqo", cached_path
-    rm "-rf", "/Applications/#{name}.app", :uid => 'root'
+    curl @resource[:source], "-Lqo", cached_path
+    rm "-rf", "/Applications/#{@resource[:name]}.app", :uid => 'root'
 
     case source_type
     when 'zip'
@@ -50,40 +71,12 @@ Puppet::Type.type(:package).provide :compressed_app,
     end
 
     chown "-R", "#{Facter[:boxen_user].value}:admin",
-      "/Applications/#{name}.app", :uid => 'root'
+      "/Applications/#{@resource[:name]}.app", :uid => 'root'
 
-    File.open("/var/db/.puppet_compressed_app_installed_#{name}", "w") do |t|
-      t.print "name: '#{name}'\n"
+    File.open("/var/db/.puppet_compressed_app_installed_#{@resource[:name]}", "w") do |t|
+      t.print "name: '#{@resource[:name]}'\n"
       t.print "source: '#{source}'\n"
     end
-  end
-
-
-  def query
-    if File.exists?("/var/db/.puppet_compressed_app_installed_#{@resource[:name]}")
-      {
-        :name   => @resource[:name],
-        :ensure => :installed
-      }
-    end
-  end
-
-  def install
-    unless source = @resource[:source]
-      self.fail "OS X compressed apps must specify a package source"
-    end
-
-    unless name = @resource[:name]
-      self.fail "OS X compressed apps must specify a package name"
-    end
-
-    if flavor = @resource[:flavor]
-      unless SOURCE_TYPES.member? flavor
-        self.fail "Unsupported flavor"
-      end
-    end
-
-    self.class.install_compressed_app name, source, flavor
   end
 
   def uninstall
