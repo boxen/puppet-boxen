@@ -53,10 +53,6 @@ Puppet::Type.type(:package).provide :compressed_app,
       self.fail "OS X compressed apps must specify a package name"
     end
 
-    source_type = @resource[:flavor] ||
-      @resource[:source].match(/\.(zip|tgz|tbz|tar\.gz|tar\.bz)$/i){|m| m[0] } ||
-      self.fail("Source must be .zip, .tar.gz, .tgz, .tar.bz2, or .tbz")
-
     FileUtils.mkdir_p '/opt/boxen/cache'
     curl @resource[:source], "-Lqo", cached_path
     rm "-rf", "/Applications/#{@resource[:name]}.app", :uid => 'root'
@@ -82,6 +78,14 @@ Puppet::Type.type(:package).provide :compressed_app,
   def uninstall
     rm "-rf", "/Applications/#{@resource[:name]}", :uid => 'root'
     rm "-f", "/var/db/.puppet_compressed_app_installed_#{@resource[:name]}"
+  end
+
+private
+
+  def source_type
+    @resource[:flavor] ||
+      @resource[:source].match(/\.(zip|tgz|tbz|tar\.gz|tar\.bz)$/i){|m| m[0] } ||
+      self.fail("Source must be .zip, .tar.gz, .tgz, .tar.bz2, or .tbz")
   end
 
   def cached_path
