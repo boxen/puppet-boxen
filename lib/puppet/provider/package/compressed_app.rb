@@ -45,7 +45,7 @@ Puppet::Type.type(:package).provide :compressed_app,
       self.fail "OS X compressed apps must specify a package source"
     end
 
-    unless SOURCE_TYPES.member? @resource[:flavor]
+    unless @resource[:flavor].nil? || SOURCE_TYPES.member?(@resource[:flavor])
       self.fail "Unsupported flavor"
     end
 
