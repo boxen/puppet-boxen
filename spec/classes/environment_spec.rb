@@ -8,18 +8,25 @@ Facter.add('boxen_repodir') do
   end
 end
 
-File.open(File.join(File.dirname(__FILE__), '..', 'fixtures', '.projects'), 'w+') do |f|
-  f.truncate 0
-  f.write 'test'
-end
-
 describe "boxen::environment" do
   context "projects from cli" do
+    let(:projects_file){ File.expand_path('../../fixtures/.projects', __FILE__) }
     let(:facts) do
       {
         :boxen_home              => "/opt/boxen",
         :boxen_repo_url_template => "https://github.com/%s"
       }
+    end
+
+    before do
+      File.open(projects_file, 'w+') do |f|
+        f.truncate 0
+        f.write 'test'
+      end
+    end
+
+    after do
+      FileUtils.rm_f(projects_file)
     end
 
     it do
