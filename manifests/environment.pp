@@ -38,5 +38,8 @@ class boxen::environment(
       ensure   => $relative_bin_on_path_ensure,
       source   => 'puppet:///modules/boxen/relative_bin_on_path.sh',
       priority => 'lowest' ;
+    'boxen_autocomplete':
+      content  => template('boxen/boxen_autocomplete.sh.erb'),
+      priority => 'lowest' ;
   }
 }
