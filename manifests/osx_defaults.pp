@@ -1,13 +1,14 @@
 # Public: Set a system config option with the OS X defaults system
 
 define boxen::osx_defaults(
-  $ensure = 'present',
-  $host   = undef,
-  $domain = undef,
-  $key    = undef,
-  $value  = undef,
-  $user   = undef,
-  $type   = undef,
+  $ensure      = 'present',
+  $host        = undef,
+  $domain      = undef,
+  $key         = undef,
+  $value       = undef,
+  $user        = undef,
+  $type        = undef,
+  $refreshonly = undef,
 ) {
   $defaults_cmd  = '/usr/bin/defaults'
   $default_cmds  = $host ? {
@@ -42,10 +43,16 @@ define boxen::osx_defaults(
 
       $read_cmd = shellquote($default_cmds, 'read', $domain, $key)
 
+      $refreshonly_ = $refreshonly ? {
+        undef   => false,
+        default => true,
+      }
+
       exec { "osx_defaults write ${host} ${domain}:${key}=>${value}":
-        command => $write_cmd,
-        unless  => "${read_cmd} && (${read_cmd} | awk '{ exit \$0 != \"${checkvalue}\" }')",
-        user    => $user
+        command     => $write_cmd,
+        unless      => "${read_cmd} && (${read_cmd} | awk '{ exit \$0 != \"${checkvalue}\" }')",
+        user        => $user,
+        refreshonly => $refreshonly_
       }
     } # end present
 
