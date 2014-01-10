@@ -2,6 +2,7 @@
 
 class boxen::bin {
   include boxen::config
+  include boxen::repo
 
   file { "${boxen::config::home}/bin/boxen":
     ensure  => link,
