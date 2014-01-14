@@ -1,0 +1,4 @@
+# Autocomplete for boxen
+
+<% script = File.expand_path("../../lib/boxen/autocomplete.rb", __FILE__) %>
+type complete >/dev/null && complete -C <%= script %> -o default boxen
