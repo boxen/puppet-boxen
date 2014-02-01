@@ -4,21 +4,38 @@
 #
 #   include boxen::config
 
-class boxen::config {
-  $home              = $::boxen_home
-  $bindir            = "${home}/bin"
-  $cachedir          = "${home}/cache"
-  $configdir         = "${home}/config"
-  $datadir           = "${home}/data"
-  $envdir            = "${home}/env.d"
-  $homebrewdir       = "${home}/homebrew"
-  $logdir            = "${home}/log"
-  $repodir           = $::boxen_repodir
-  $reponame          = $::boxen_reponame
-  $socketdir         = "${datadir}/project-sockets"
-  $srcdir            = $::boxen_srcdir
-  $login             = $::github_login
-  $repo_url_template = $::boxen_repo_url_template
+class boxen::config (
+  $home = undef,
+  $bindir = undef,
+  $cachedir = undef,
+  $configdir = undef,
+  $datadir = undef,
+  $envdir = undef,
+  $homebrewdir = undef,
+  $logdir = undef,
+  $repodir = undef,
+  $reponame = undef,
+  $socketdir = undef,
+  $srcdir = undef,
+  $login = undef,
+  $repo_url_template = undef,
+) {
+  validate_string(
+    $home,
+    $bindir,
+    $cachedir,
+    $configdir,
+    $datadir,
+    $envdir,
+    $homebrewdir,
+    $logdir,
+    $repodir,
+    $reponame,
+    $socketdir,
+    $srcdir,
+    $login,
+    $repo_url_template,
+  )
 
   file { [$home,
           $srcdir,
