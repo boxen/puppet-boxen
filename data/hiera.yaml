@@ -1,0 +1,4 @@
+---
+:hierarchy:
+  - "%{::osfamily}"
+  - common
