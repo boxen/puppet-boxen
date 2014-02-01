@@ -1,6 +1,9 @@
 require 'rspec-puppet'
 
+root_path = File.expand_path(File.join(__FILE__, '..'))
 fixture_path = File.expand_path(File.join(__FILE__, '..', 'fixtures'))
+
+$: << File.join(fixture_path, 'modules/module-data/lib')
 
 RSpec.configure do |c|
   c.mock_framework = :rspec

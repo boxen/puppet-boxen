@@ -8,7 +8,13 @@ GITHUBTARBALL
   specs:
     sudo (0.0.1)
 
+GITHUBTARBALL
+  remote: ripienaar/puppet-module-data
+  specs:
+    module-data (0.0.1)
+
 DEPENDENCIES
   homebrew (= 0.0.16)
+  module-data (= 0.0.1)
   sudo (= 0.0.1)
 
