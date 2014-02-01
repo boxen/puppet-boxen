@@ -9,6 +9,11 @@ GITHUBTARBALL
     sudo (0.0.1)
 
 GITHUBTARBALL
+  remote: puppetlabs/puppetlabs-stdlib
+  specs:
+    stdlib (4.1.0)
+
+GITHUBTARBALL
   remote: ripienaar/puppet-module-data
   specs:
     module-data (0.0.1)
@@ -16,5 +21,6 @@ GITHUBTARBALL
 DEPENDENCIES
   homebrew (= 0.0.16)
   module-data (= 0.0.1)
+  stdlib (= 4.1.0)
   sudo (= 0.0.1)
 

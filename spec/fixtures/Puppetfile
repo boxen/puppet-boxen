@@ -1,3 +1,4 @@
-mod 'homebrew', '0.0.16', :github_tarball => 'boxen/puppet-homebrew'
-mod 'sudo',     '0.0.1',  :github_tarball => 'boxen/puppet-sudo'
-mod "module-data", "0.0.1", :github_tarball => "ripienaar/puppet-module-data"
+mod 'homebrew',    '0.0.16', :github_tarball => 'boxen/puppet-homebrew'
+mod 'module-data', '0.0.1',  :github_tarball => 'ripienaar/puppet-module-data'
+mod 'stdlib',      '4.1.0',  :github_tarball => 'puppetlabs/puppetlabs-stdlib'
+mod 'sudo',        '0.0.1',  :github_tarball => 'boxen/puppet-sudo'
