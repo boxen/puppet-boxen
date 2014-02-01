@@ -34,6 +34,10 @@ else
   facts["boxen_reponame"] = ENV['BOXEN_REPONAME']
   facts["boxen_user"]     = ENV['BOXEN_USER']
   facts["luser"]          = ENV['BOXEN_USER']
+
+  facts["boxen_repo_url_template"] = ENV['BOXEN_REPO_URL_TEMPLATE']
+  facts["boxen_s3_host"]           = ENV['BOXEN_S3_HOST']
+  facts["boxen_s3_bucket"]         = ENV['BOXEN_S3_BUCKET']
 end
 
 facts["boxen_repo_url_template"] ||= "https://github.com/%s"
