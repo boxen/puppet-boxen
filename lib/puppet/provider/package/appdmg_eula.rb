@@ -58,7 +58,7 @@ Puppet::Type.type(:package).provide(:appdmg_eula, :parent => Puppet::Provider::P
 
   def self.installpkgdmg(source, name)
     unless source =~ /\.dmg$/i
-      self.fail "Mac OS X PKG DMG's must specify a source string ending in .dmg"
+      fail "Mac OS X PKG DMG's must specify a source string ending in .dmg"
     end
     require 'open-uri'
     require 'facter/util/plist'
@@ -122,10 +122,10 @@ Puppet::Type.type(:package).provide(:appdmg_eula, :parent => Puppet::Provider::P
   def install
     source = nil
     unless source = @resource[:source]
-      self.fail "Mac OS X PKG DMG's must specify a package source."
+      fail "Mac OS X PKG DMG's must specify a package source."
     end
     unless name = @resource[:name]
-      self.fail "Mac OS X PKG DMG's must specify a package name."
+      fail "Mac OS X PKG DMG's must specify a package name."
     end
     self.class.installpkgdmg(source,name)
   end
