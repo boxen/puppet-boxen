@@ -36,7 +36,7 @@
 #
 #     mysql =>
 #       If set to true, ensures mysql is installed and creates databases named
-#       "${name}_development" and "${name}_test".
+#       "${underscored_name}_development" and "${underscored_name}_test".
 #       If set to any string or array value, creates those databases instead.
 #
 #     nginx =>
@@ -46,7 +46,7 @@
 #
 #     postgresql =>
 #       If set to true, ensures postgresql is installed and creates databases
-#       named "${name}_development" and "${name}_test".
+#       named "${underscored_name}_development" and "${underscored_name}_test".
 #       If set to any string or array value, creates those databases instead.
 #
 #     redis =>
@@ -83,7 +83,8 @@ define boxen::project(
   $redis         = undef,
   $ruby          = undef,
   $phantomjs     = undef,
-  $server_name   = "${name}.dev",
+  $server_name   = regsubst(regsubst($name, '[^a-zA-Z0-9]+', '-', 'G'), '$','.dev'),
+  $underscored_name = regsubst($name, '[^a-zA-Z0-9]+', '_', 'G'),
 ) {
   include boxen::config
 
@@ -139,7 +140,7 @@ define boxen::project(
     require mysql
 
     $mysql_dbs = $mysql ? {
-      true    => ["${name}_development", "${name}_test"],
+      true    => ["${underscored_name}_development", "${underscored_name}_test"],
       default => $mysql,
     }
 
@@ -155,7 +156,7 @@ define boxen::project(
       default => $nginx,
     }
 
-    file { "${nginx::config::sitesdir}/${name}.conf":
+    file { "${nginx::config::sitesdir}/${underscored_name}.conf":
       content => template($nginx_templ),
       require => File[$nginx::config::sitesdir],
       notify  => Service['dev.nginx'],
@@ -171,7 +172,7 @@ define boxen::project(
 
   if $postgresql {
     $psql_dbs = $postgresql ? {
-      true    => ["${name}_development", "${name}_test"],
+      true    => ["${underscored_name}_development", "${underscored_name}_test"],
       default => $postgresql,
     }
 
