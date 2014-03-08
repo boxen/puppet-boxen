@@ -161,6 +161,12 @@ define boxen::project(
       require => File[$nginx::config::sitesdir],
       notify  => Service['dev.nginx'],
     }
+
+    $socket_dir = dirname("${boxen::config::socketdir}/${name}")
+    file { $socket_dir:
+      ensure => directory,
+      require => File[$boxen::config::socketdir]
+    }
   }
 
   if $nodejs {
