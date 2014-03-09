@@ -167,14 +167,14 @@ define boxen::project(
     $log_dir = "${nginx::config::logdir}/${project_ext}"
     if(!defined(File[$socket_dir])) {
       file { $socket_dir:
-	ensure  => directory,
-	require => File[$boxen::config::socketdir]
+        ensure  => directory,
+        require => File[$boxen::config::socketdir]
       }
     }
     if(!defined(File[$log_dir])) {
       file { $log_dir:
-	ensure  => directory,
-	require => File[$boxen::config::logdir]
+        ensure  => directory,
+        require => File[$boxen::config::logdir]
       }
     }
   }
