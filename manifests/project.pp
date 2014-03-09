@@ -164,7 +164,7 @@ define boxen::project(
 
     $socket_dir = dirname("${boxen::config::socketdir}/${name}")
     file { $socket_dir:
-      ensure => directory,
+      ensure  => directory,
       require => File[$boxen::config::socketdir]
     }
   }
