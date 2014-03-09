@@ -162,10 +162,20 @@ define boxen::project(
       notify  => Service['dev.nginx'],
     }
 
-    $socket_dir = dirname("${boxen::config::socketdir}/${name}")
-    file { $socket_dir:
-      ensure  => directory,
-      require => File[$boxen::config::socketdir]
+    $project_ext = dirname($name)
+    $socket_dir = "${boxen::config::socketdir}/${project_ext}"
+    $log_dir = "${nginx::config::logdir}/${project_ext}"
+    if(!defined(File[$socket_dir])) {
+      file { $socket_dir:
+	ensure  => directory,
+	require => File[$boxen::config::socketdir]
+      }
+    }
+    if(!defined(File[$log_dir])) {
+      file { $log_dir:
+	ensure  => directory,
+	require => File[$boxen::config::logdir]
+      }
     }
   }
 
