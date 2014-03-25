@@ -1,7 +1,7 @@
 # Private: A basic security profile for Boxen boxes
 
 class boxen::security(
-  $require_password = true,
+  $require_password = 1,
   $screensaver_delay_sec = 5
 ) {
   boxen::osx_defaults { 'require password at screensaver':
@@ -9,6 +9,7 @@ class boxen::security(
     domain => 'com.apple.screensaver',
     key    => 'askForPassword',
     value  => $require_password,
+    type   => 'int',
     user   => $::boxen_user
   }
 
