@@ -5,7 +5,7 @@ Puppet::Type.type(:package).provide :compressed_app,
 :parent => Puppet::Provider::Package do
   desc "Installs a compressed .app. Supports zip, tar.gz, tar.bz2"
 
-  SOURCE_TYPES = %w(zip tgz tar.gz tbz tbz2 tar.bz2)
+  FLAVORS = %w(zip tgz tar.gz tbz tbz2 tar.bz2)
 
   confine  :operatingsystem => :darwin
 
@@ -45,7 +45,7 @@ Puppet::Type.type(:package).provide :compressed_app,
       self.fail "OS X compressed apps must specify a package source"
     end
 
-    unless @resource[:flavor].nil? || SOURCE_TYPES.member?(@resource[:flavor])
+    unless @resource[:flavor].nil? || FLAVORS.member?(@resource[:flavor])
       self.fail "Unsupported flavor"
     end
 
@@ -57,13 +57,15 @@ Puppet::Type.type(:package).provide :compressed_app,
     curl @resource[:source], "-Lqo", cached_path
     rm "-rf", app_path, :uid => 'root'
 
-    case source_type
+    case flavor
     when 'zip'
       ditto "-xk", cached_path, "/Applications", :uid => 'root'
     when 'tar.gz', 'tgz'
       tar "-zxf", cached_path, "-C", "/Applications", :uid => 'root'
     when 'tar.bz2', 'tbz', 'tbz2'
       tar "-jxf", cached_path, "-C", "/Applications", :uid => 'root'
+    else
+      fail "Can't decompress flavor #{flavor}"
     end
 
     chown "-R", "#{Facter[:boxen_user].value}:admin", app_path, :uid => 'root'
@@ -81,10 +83,8 @@ Puppet::Type.type(:package).provide :compressed_app,
 
 private
 
-  def source_type
-    @resource[:flavor] ||
-      @resource[:source].match(/\.(#{SOURCE_TYPES.join('|')})$/i){|m| m[0] } ||
-      self.fail("Source must be .zip, .tar.gz, .tgz, .tar.bz2, or .tbz")
+  def flavor
+    @resource[:flavor] || @resource[:source].match(/\.(#{FLAVORS.join('|')})$/i){|m| m[0] }
   end
 
   def app_path
@@ -92,7 +92,7 @@ private
   end
 
   def cached_path
-    "/opt/boxen/cache/#{@resource[:name]}.app.#{source_type}"
+    "/opt/boxen/cache/#{@resource[:name]}.app.#{flavor}"
   end
 
   def receipt_path
