@@ -51,7 +51,7 @@ Puppet::Type.type(:package).provide :compressed_app,
 
     case flavor
     when 'zip'
-      ditto "-xk", cached_path, "/Applications", :uid => 'root'
+      ditto "-xk", cached_path, "/Applications/", :uid => 'root'
     when 'tar.gz', 'tgz'
       tar "-zxf", cached_path, "-C", "/Applications", :uid => 'root'
     when 'tar.bz2', 'tbz', 'tbz2'
