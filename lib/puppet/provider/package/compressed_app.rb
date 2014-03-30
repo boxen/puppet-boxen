@@ -41,17 +41,9 @@ Puppet::Type.type(:package).provide :compressed_app,
   end
 
   def install
-    unless @resource[:source]
-      self.fail "OS X compressed apps must specify a package source"
-    end
-
-    unless @resource[:flavor].nil? || FLAVORS.member?(@resource[:flavor])
-      self.fail "Unsupported flavor"
-    end
-
-    unless @resource[:name]
-      self.fail "OS X compressed apps must specify a package name"
-    end
+    fail("OS X compressed apps must specify a package name") unless @resource[:name]
+    fail("OS X compressed apps must specify a package source") unless @resource[:source]
+    fail("Unknown flavor #{flavor}") unless FLAVORS.include?(flavor)
 
     FileUtils.mkdir_p '/opt/boxen/cache'
     curl @resource[:source], "-Lqo", cached_path
