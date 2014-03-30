@@ -76,7 +76,7 @@ Puppet::Type.type(:package).provide :compressed_app,
 private
 
   def flavor
-    @resource[:flavor] || @resource[:source].match(/\.(#{FLAVORS.join('|')})$/i){|m| m[0] }
+    @resource[:flavor] || @resource[:source].match(/\.(#{FLAVORS.join('|')})$/i){|m| m[1] }
   end
 
   def app_path
