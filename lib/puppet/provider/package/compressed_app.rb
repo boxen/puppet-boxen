@@ -60,7 +60,7 @@ Puppet::Type.type(:package).provide :compressed_app,
       fail "Can't decompress flavor #{flavor}"
     end
 
-    chown "-R", "#{Facter[:boxen_user].value}:admin", app_path, :uid => 'root'
+    chown "-R", "#{Facter[:boxen_user].value}:staff", app_path, :uid => 'root'
 
     File.open(receipt_path, "w") do |t|
       t.print "name: '#{@resource[:name]}'\n"
