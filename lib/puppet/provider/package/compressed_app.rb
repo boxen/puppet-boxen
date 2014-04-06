@@ -47,20 +47,20 @@ Puppet::Type.type(:package).provide :compressed_app,
 
     FileUtils.mkdir_p '/opt/boxen/cache'
     curl @resource[:source], "-Lqo", cached_path
-    rm "-rf", app_path, :uid => 'root'
+    rm "-rf", app_path
 
     case flavor
     when 'zip'
-      ditto "-xk", cached_path, "/Applications/", :uid => 'root'
+      ditto "-xk", cached_path, "/Applications"
     when 'tar.gz', 'tgz'
-      tar "-zxf", cached_path, "-C", "/Applications", :uid => 'root'
+      tar "-zxf", cached_path, "-C", "/Applications"
     when 'tar.bz2', 'tbz', 'tbz2'
-      tar "-jxf", cached_path, "-C", "/Applications", :uid => 'root'
+      tar "-jxf", cached_path, "-C", "/Applications"
     else
       fail "Can't decompress flavor #{flavor}"
     end
 
-    chown "-R", "#{Facter[:boxen_user].value}:staff", app_path, :uid => 'root'
+    chown "-R", "#{Facter[:boxen_user].value}:staff", app_path
 
     File.open(receipt_path, "w") do |t|
       t.print "name: '#{@resource[:name]}'\n"
@@ -69,7 +69,7 @@ Puppet::Type.type(:package).provide :compressed_app,
   end
 
   def uninstall
-    rm "-rf", app_path, :uid => 'root'
+    rm "-rf", app_path
     rm "-f", receipt_path
   end
 
