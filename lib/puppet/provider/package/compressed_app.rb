@@ -64,7 +64,7 @@ Puppet::Type.type(:package).provide :compressed_app,
 
     File.open(receipt_path, "w") do |t|
       t.print "name: '#{@resource[:name]}'\n"
-      t.print "source: '#{source}'\n"
+      t.print "source: '#{@resource[:source]}'\n"
     end
   end
 
