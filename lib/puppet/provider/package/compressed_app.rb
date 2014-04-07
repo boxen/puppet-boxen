@@ -9,6 +9,8 @@ Puppet::Type.type(:package).provide :compressed_app,
 
   confine  :operatingsystem => :darwin
 
+  commands :ditto => "/usr/bin/ditto"
+
   def self.instances_by_name
     Dir.entries("/var/db").find_all { |f|
       f =~ /^\.puppet_compressed_app_installed_/
@@ -50,13 +52,7 @@ Puppet::Type.type(:package).provide :compressed_app,
 
     case source_type
     when 'zip'
-      execute [
-        "/usr/bin/unzip",
-        "-o",
-        "'/opt/boxen/cache/#{name}.app.#{source_type}'",
-        "-d",
-        "/Applications"
-      ].join(' '), :uid => 'root'
+      ditto "-xk", cached_source, "/Applications", :uid => 'root'
     when 'tar.gz', 'tgz'
       execute [
         "/usr/bin/tar",
