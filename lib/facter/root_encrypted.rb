@@ -1,5 +1,5 @@
 Facter.add("root_encrypted") do
-  confine :os_family => 'Darwin'
+  confine :osfamily => 'Darwin'
 
   def root_encrypted?
     system("/usr/bin/fdesetup isactive / >/dev/null")
