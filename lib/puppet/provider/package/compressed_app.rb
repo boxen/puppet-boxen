@@ -5,9 +5,15 @@ Puppet::Type.type(:package).provide :compressed_app,
 :parent => Puppet::Provider::Package do
   desc "Installs a compressed .app. Supports zip, tar.gz, tar.bz2"
 
-  SOURCE_TYPES = %w(zip tar.gz tar.bz2 tgz tbz)
+  FLAVORS = %w(zip tgz tar.gz tbz tbz2 tar.bz2)
 
   confine  :operatingsystem => :darwin
+
+  commands :curl  => "/usr/bin/curl"
+  commands :ditto => "/usr/bin/ditto"
+  commands :tar   => "/usr/bin/tar"
+  commands :chown => "/usr/sbin/chown"
+  commands :rm    => "/bin/rm"
 
   def self.instances_by_name
     Dir.entries("/var/db").find_all { |f|
@@ -25,76 +31,8 @@ Puppet::Type.type(:package).provide :compressed_app,
     end
   end
 
-  def self.install_compressed_app(name, source, flavor = nil)
-    FileUtils.mkdir_p '/opt/boxen/cache'
-    source_type = case
-                  when flavor
-                    flavor
-                  when source =~ /\.zip$/i
-                    'zip'
-                  when source =~ /\.tar\.gz$/i
-                    'tar.gz'
-                  when source =~ /\.tgz$/i
-                    'tgz'
-                  when source =~ /\.tar\.bz2$/i
-                    'tar.bz2'
-                  when source =~ /\.tbz$/i
-                    'tbz'
-                  else
-                    self.fail "Source must be one of .zip, .tar.gz, .tgz, .tar.bz2, .tbz"
-                  end
-
-
-    execute "curl '#{source}' -L -q -o '/opt/boxen/cache/#{name}.app.#{source_type}'"
-    execute "rm -rf '/Applications/#{name}.app'", :uid => 'root'
-
-    case source_type
-    when 'zip'
-      execute [
-        "/usr/bin/unzip",
-        "-o",
-        "'/opt/boxen/cache/#{name}.app.#{source_type}'",
-        "-d",
-        "/Applications"
-      ].join(' '), :uid => 'root'
-    when 'tar.gz', 'tgz'
-      execute [
-        "/usr/bin/tar",
-        "-zxf",
-        "'/opt/boxen/cache/#{name}.app.#{source_type}'",
-        "-C",
-        "/Applications"
-      ].join(' '), :uid => 'root'
-    when 'tar.bz2', 'tbz'
-      execute [
-        "/usr/bin/tar",
-        "-jxf",
-        "'/opt/boxen/cache/#{name}.app.#{source_type}'",
-        "-C",
-        "/Applications"
-      ].join(' '), :uid => 'root'
-    end
-
-    execute [
-      "/usr/sbin/chown",
-      "-R",
-      "#{Facter[:boxen_user].value}:admin",
-      "/Applications/#{name}.app"
-    ].join(" "), :uid => 'root'
-
-    File.open("/var/db/.puppet_compressed_app_installed_#{name}", "w") do |t|
-      t.print "name: '#{name}'\n"
-      t.print "source: '#{source}'\n"
-    end
-  end
-
-  def self.uninstall_compressed_app(name)
-    execute "rm -rf '/Applications/#{name}'", :uid => 'root'
-    execute "rm -f '/var/db/.puppet_compressed_app_installed_#{name}'"
-  end
-
   def query
-    if File.exists?("/var/db/.puppet_compressed_app_installed_#{@resource[:name]}")
+    if File.exists?(receipt_path)
       {
         :name   => @resource[:name],
         :ensure => :installed
@@ -103,24 +41,54 @@ Puppet::Type.type(:package).provide :compressed_app,
   end
 
   def install
-    unless source = @resource[:source]
-      self.fail "OS X compressed apps must specify a package source"
+    fail("OS X compressed apps must specify a package name") unless @resource[:name]
+    fail("OS X compressed apps must specify a package source") unless @resource[:source]
+    fail("Unknown flavor #{flavor}") unless FLAVORS.include?(flavor)
+
+    FileUtils.mkdir_p '/opt/boxen/cache'
+    curl @resource[:source], "-Lqo", cached_path
+    rm "-rf", app_path
+
+    case flavor
+    when 'zip'
+      ditto "-xk", cached_path, "/Applications"
+    when 'tar.gz', 'tgz'
+      tar "-zxf", cached_path, "-C", "/Applications"
+    when 'tar.bz2', 'tbz', 'tbz2'
+      tar "-jxf", cached_path, "-C", "/Applications"
+    else
+      fail "Can't decompress flavor #{flavor}"
     end
 
-    unless name = @resource[:name]
-      self.fail "OS X compressed apps must specify a package name"
-    end
+    chown "-R", "#{Facter[:boxen_user].value}:staff", app_path
 
-    if flavor = @resource[:flavor]
-      unless SOURCE_TYPES.member? flavor
-        self.fail "Unsupported flavor"
-      end
+    File.open(receipt_path, "w") do |t|
+      t.print "name: '#{@resource[:name]}'\n"
+      t.print "source: '#{@resource[:source]}'\n"
     end
-
-    self.class.install_compressed_app name, source, flavor
   end
 
   def uninstall
-    self.class.uninstall_compressed_app @resource[:name]
+    rm "-rf", app_path
+    rm "-f", receipt_path
   end
+
+private
+
+  def flavor
+    @resource[:flavor] || @resource[:source].match(/\.(#{FLAVORS.join('|')})$/i){|m| m[1] }
+  end
+
+  def app_path
+    "/Applications/#{@resource[:name]}.app"
+  end
+
+  def cached_path
+    "/opt/boxen/cache/#{@resource[:name]}.app.#{flavor}"
+  end
+
+  def receipt_path
+    "/var/db/.puppet_compressed_app_installed_#{@resource[:name]}"
+  end
+
 end
