@@ -2,9 +2,9 @@ require 'json'
 
 Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
   commands :launchctl => "/bin/launchctl",
-            :plutil   => "/usr/bin/plutil",
-            :rm       => "/bin/rm",
-            :sudo     => "/usr/bin/sudo"
+           :plutil    => "/usr/bin/plutil",
+           :rm        => "/bin/rm",
+           :sudo      => "/usr/bin/sudo"
 
   confine :operatingsystem => :darwin
 
@@ -12,7 +12,7 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
   mk_resource_methods
 
   def boxen_user
-    Facter.fact(:boxen_user).value
+    Facter.fact(:boxen_user).value.to_s
   end
 
   def run_as_boxen_user?
@@ -35,7 +35,7 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
   end
 
   def maybe_sudo_launchctl(*args)
-    if run_as_boxen_user? then
+    if run_as_boxen_user?
       sudo('-u', boxen_user, command(:launchctl), *args)
     else
       launchctl(*args)
