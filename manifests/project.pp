@@ -44,6 +44,10 @@
 #       modules/projects/templates/shared/nginx.conf.erb.
 #       If given a string, uses that template instead.
 #
+#     nodejs =>
+#       If given a string, ensures that node version is installed.
+#       Also creates "${dir}/.node-version" with content being this value.
+#
 #     postgresql =>
 #       If set to true, ensures postgresql is installed and creates databases
 #       named "${name}_development" and "${name}_test".
