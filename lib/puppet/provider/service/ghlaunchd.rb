@@ -1,27 +1,49 @@
+require 'json'
+
 Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
   commands :launchctl => "/bin/launchctl",
-            :plutil   => "/usr/bin/plutil",
-            :rm       => "/bin/rm"
+           :plutil    => "/usr/bin/plutil",
+           :rm        => "/bin/rm",
+           :sudo      => "/usr/bin/sudo"
 
   confine :operatingsystem => :darwin
 
   has_feature :enableable
   mk_resource_methods
 
-  LAUNCHD_DIRS = [
-    "/Library/LaunchAgents",
-    "/Library/LaunchDaemons",
-    "/System/Library/LaunchAgents",
-    "/System/Library/LaunchDaemons"
-  ]
+  def boxen_user
+    Facter.fact(:boxen_user).value.to_s
+  end
+
+  def run_as_boxen_user?
+    plist_file.include?("/Library/LaunchAgents") && !boxen_user.empty?
+  end
+
+  def launchd_dirs
+    [
+      "/Users/#{boxen_user}/Library/LaunchAgents",
+      "/Library/LaunchAgents",
+      "/Library/LaunchDaemons",
+      "/System/Library/LaunchAgents",
+      "/System/Library/LaunchDaemons",
+    ]
+  end
 
   def restart
     stop
     start
   end
 
+  def maybe_sudo_launchctl(*args)
+    if run_as_boxen_user?
+      sudo('-u', boxen_user, command(:launchctl), *args)
+    else
+      launchctl(*args)
+    end
+  end
+
   def status
-    service = launchctl(:list, resource[:name]) rescue nil
+    service = maybe_sudo_launchctl(:list, resource[:name]) rescue nil
     running  = service.include?("PID") rescue nil
     running |= service['OnDemand'] rescue nil
     running ? :running : :stopped
@@ -35,11 +57,15 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
     end
   end
 
+  def start_after_load?
+    config['inetdCompatibility'].nil?
+  end
+
   def start
     return false if plist_file.to_s.empty?
-    launchctl :load, "-w", plist_file
-    if config['inetdCompatibility'].nil?
-      launchctl :start, resource[:name]
+    maybe_sudo_launchctl :load, "-w", plist_file
+    if start_after_load?
+      maybe_sudo_launchctl :start, resource[:name]
     end
   rescue => e
     if e.message =~ /Can't find #{name}/
@@ -51,7 +77,7 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
 
   def stop
     return false if plist_file.to_s.empty?
-    launchctl :unload, "-w", plist_file
+    maybe_sudo_launchctl :unload, "-w", plist_file
   rescue => e
     if e.message =~ /Can't find #{name}/
       true
@@ -99,14 +125,14 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
   end
 
   # The launchd `.plist` file for this service, which must exist in
-  # one of the `LAUNCHD_DIRS`. Raises if the file can't be found.
+  # one of the `launchd_dirs`. Raises if the file can't be found.
 
   def plist_file
     return @plist_file if defined? @plist_file
 
     name = "#{resource[:name]}.plist"
-    glob = "{" + LAUNCHD_DIRS.join(",") + "}/#{name}"
+    pattern = "{" + launchd_dirs.join(",") + "}/#{name}"
 
-    @plist_file = Dir[glob].first.to_s or raise "Can't find #{name}."
+    @plist_file = Dir.glob(pattern).first.to_s or raise "Can't find #{name}."
   end
 end

@@ -66,4 +66,5 @@ PLATFORMS
 
 DEPENDENCIES
   cardboard (~> 2.1)
+  json
   puppet (< 3.4)
