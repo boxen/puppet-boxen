@@ -30,7 +30,7 @@ describe "boxen::environment" do
     end
 
     it do
-      should include_class("projects::test")
+      should contain_class("projects::test")
     end
   end
 end

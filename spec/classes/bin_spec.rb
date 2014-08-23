@@ -11,6 +11,6 @@ describe 'boxen::bin' do
       :boxen_home          => '/opt/boxen'
     }
   end
-  it { should include_class('boxen::config')}
+  it { should contain_class('boxen::config') }
   it { should contain_file("#{facts[:boxen_home]}/bin/boxen") }
 end
