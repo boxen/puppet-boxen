@@ -33,14 +33,14 @@ describe 'boxen::osx_defaults' do
     }
     let(:params) { default_params }
 
-    context "for writing" do
+    context 'for writing' do
       it do
         should contain_exec("osx_defaults write #{host} #{domain}:#{key}=>#{value}").
           with(:command => "/usr/bin/defaults -host #{host} write \"#{domain}\" \"#{key}\" \"#{value}\"")
       end
     end
 
-    context "for deleting" do
+    context 'for deleting' do
       let(:params) { default_params.merge(:ensure => 'delete') }
 
       it do
@@ -92,6 +92,35 @@ describe 'boxen::osx_defaults' do
     end
   end
 
+  context 'with a refreshonly' do
+    let(:params) {
+      { :domain => domain,
+        :key    => key,
+        :value  => value,
+        :refreshonly => true,
+      }
+    }
+
+    it 'check the refreshonly is true' do
+      should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+        with(:refreshonly => true)
+    end
+  end
+
+  context 'without a refreshonly' do
+    let(:params) {
+      { :domain => domain,
+        :key    => key,
+        :value  => value,
+      }
+    }
+
+    it 'check the refreshonly is false' do
+      should contain_exec("osx_defaults write  #{domain}:#{key}=>#{value}").
+        with(:refreshonly => false)
+    end
+  end
+
   context 'boolean handling' do
     let(:params) {
       { :domain => domain,
@@ -135,7 +164,7 @@ describe 'boxen::osx_defaults' do
     end
   end
 
-  context "with a boolean value" do
+  context 'with a boolean value' do
     let(:value) { true }
     let(:params) {
       { :domain => domain,
@@ -151,7 +180,7 @@ describe 'boxen::osx_defaults' do
     end
   end
 
-  context "with a host" do
+  context 'with a host' do
     let(:params) {
       { :domain => domain,
         :key    => key,
@@ -160,7 +189,7 @@ describe 'boxen::osx_defaults' do
       }
     }
 
-    context "currentHost" do
+    context 'currentHost' do
       let(:host) { 'currentHost' }
 
       it do
@@ -169,7 +198,7 @@ describe 'boxen::osx_defaults' do
       end
     end
 
-    context "specific host" do
+    context 'specific host' do
       let(:host) { 'mybox.example.com' }
 
       it do
