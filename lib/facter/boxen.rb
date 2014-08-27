@@ -44,6 +44,12 @@ facts["boxen_repo_url_template"] ||= "https://github.com/%s"
 facts["boxen_s3_host"]           ||= "s3.amazonaws.com"
 facts["boxen_s3_bucket"]         ||= "boxen-downloads"
 
+if File.exists?("#{facts["boxen_repodir"]}/.projects")
+  facts["boxen_projects"] = File.read("#{facts["boxen_repodir"]}/.projects").strip
+else
+  facts["boxen_projects"] = ""
+end
+
 Dir["#{facts['boxen_home']}/config/facts/*.json"].each do |file|
   facts.merge! JSON.parse File.read file
 end
