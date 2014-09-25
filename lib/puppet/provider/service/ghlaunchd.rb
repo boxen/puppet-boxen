@@ -38,9 +38,7 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
   def start
     return false if plist_file.to_s.empty?
     launchctl :load, "-w", plist_file
-    if config['inetdCompatibility'].nil?
-      launchctl :start, resource[:name]
-    end
+    launchctl :start, resource[:name]
   rescue => e
     if e.message =~ /Can't find #{name}/
       false
@@ -69,33 +67,6 @@ Puppet::Type.type(:service).provide :ghlaunchd, :parent => :base do
     stop
     rm(plist_file) if File.exist?(plist_file) && ! plist_file.to_s.empty?
     true
-  end
-
-  # The merged configuration for this service, including data from the
-  # service's plist file and launchd's overrides database.
-
-  def config
-    plist.merge overrides
-  end
-
-  # A Hash of configuration information for this service, pulled from
-  # launchd's overrides database. Normally you'll want to use `config`
-  # instead of using `overrides` directly.
-
-  def overrides
-    file = "/var/db/launchd.db/com.apple.launchd/overrides.plist"
-    json = plutil "-convert", "json", "-o", "/dev/stdout", file
-    data = JSON.parse json
-
-    data[resource[:name]] || {}
-  end
-
-  # A Hash of configuration information parsed from `plist_file`.
-  # Normally you'll want to use `config` instead of using `plist`
-  # directly.
-
-  def plist
-    JSON.parse plutil("-convert", "json", "-o", "/dev/stdout", plist_file)
   end
 
   # The launchd `.plist` file for this service, which must exist in
