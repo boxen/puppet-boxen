@@ -61,8 +61,7 @@
 #       Also creates "${dir}/.ruby-version" with content being this value.
 #
 #     phantomjs =>
-#       If given a string, ensures that phantomjs version is installed.
-#       Also creates "${dir}/.phantom-version" with content being this value.
+#        If true, ensures phantomjs is installed.
 #
 #     source =>
 #       Repo to clone project from. REQUIRED. Supports shorthand <user>/<repo>.
@@ -194,9 +193,6 @@ define boxen::project(
   }
 
   if $phantomjs {
-    phantomjs::local { $repo_dir:
-      version => $phantomjs,
-      require => Repository[$repo_dir]
-    }
+    include phantomjs
   }
 }
