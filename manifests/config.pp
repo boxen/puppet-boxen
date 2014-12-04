@@ -19,6 +19,7 @@ class boxen::config (
   $srcdir = undef,
   $login = undef,
   $repo_url_template = undef,
+  $download_url_base = undef,
 ) {
   validate_string(
     $home,
@@ -35,6 +36,7 @@ class boxen::config (
     $srcdir,
     $login,
     $repo_url_template,
+    $download_url_base,
   )
 
   file { [$home,
