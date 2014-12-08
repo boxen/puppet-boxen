@@ -64,6 +64,9 @@
 #       If given a string, ensures that phantomjs version is installed.
 #       Also creates "${dir}/.phantom-version" with content being this value.
 #
+#     rabbitmq =>
+#       If true, ensures rabbitmq is installed.
+#
 #     source =>
 #       Repo to clone project from. REQUIRED. Supports shorthand <user>/<repo>.
 #
@@ -87,6 +90,7 @@ define boxen::project(
   $redis         = undef,
   $ruby          = undef,
   $phantomjs     = undef,
+  $rabbitmq      = undef,
   $server_name   = "${name}.dev",
 ) {
   include boxen::config
@@ -198,5 +202,9 @@ define boxen::project(
       version => $phantomjs,
       require => Repository[$repo_dir]
     }
+  }
+
+  if $rabbitmq {
+    include rabbitmq
   }
 }
