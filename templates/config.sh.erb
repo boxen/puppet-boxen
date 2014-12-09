@@ -7,3 +7,6 @@ export BOXEN_ENV_DIR=<%= scope.lookupvar('boxen::config::envdir') %>
 export BOXEN_LOG_DIR=<%= scope.lookupvar('boxen::config::logdir') %>
 export BOXEN_SOCKET_DIR=<%= scope.lookupvar('boxen::config::socketdir') %>
 export BOXEN_SRC_DIR=<%= scope.lookupvar('boxen::config::srcdir') %>
+
+# Expose boxen's binary download location
+export BOXEN_DOWNLOAD_URL_BASE=<%= scope.lookupvar('boxen::config::download_url_base') %>
