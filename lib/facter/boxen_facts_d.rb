@@ -9,6 +9,24 @@ require 'boxen/config'
 
 class BoxenFactsDirectoryLoader < Facter::Util::DirectoryLoader
   EXTERNAL_FACT_WEIGHT = Facter::Util::DirectoryLoader::EXTERNAL_FACT_WEIGHT + 1
+
+  def load(collection)
+    entries.each do |file|
+      parser = Facter::Util::Parser.parser_for(file)
+      if parser == nil
+        next
+      end
+
+      data = parser.results
+      if data == false
+        Facter.warn "Could not interpret fact file #{file}"
+      elsif data == {} or data == nil
+        Facter.warn "Fact file #{file} was parsed but returned an empty data set"
+      else
+        data.each { |p,v| collection.add(p, :value => v) { has_weight(EXTERNAL_FACT_WEIGHT) } }
+      end
+    end
+  end
 end
 
 # Find where boxen is installed
@@ -17,5 +35,5 @@ boxen_home = config.repodir
 facts_d = File.join(boxen_home, "facts.d")
 
 # Load all "external facts" from $BOXEN_HOME/facts.d
-loader = BoxenFactsDirectoryLoader.loader_for(facts_d)
+loader = BoxenFactsDirectoryLoader.new(facts_d)
 loader.load(Facter.collection)
