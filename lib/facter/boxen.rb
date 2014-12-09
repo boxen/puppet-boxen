@@ -57,9 +57,6 @@ if File.file?(dot_boxen)
   facts.merge! JSON.parse(File.read(dot_boxen))
 end
 
-
 facts.each do |k, v|
-  unless Facter.value(k)
-    Facter.add(k) { setcode { v } }
-  end
+  Facter.add(k) { has_weight(-1); setcode { v } }
 end
