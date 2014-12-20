@@ -1,6 +1,30 @@
-# Private: Includes a user's personal manifest based on their github username
+# Private: Includes a user's personal configuration based on their GitHub username
+#
+# Usage:
+#
+#   include boxen::personal
+#
+# Parameters:
+#
+#   projects
+#     Array of github projects to include
+#   includes
+#     Array of puppet modules to include
+#   casks
+#     Array of brew-casks to include (aliased as osx_apps)
+#   homebrew_packages
+#     Array of homebrew packages to install
+#   custom_projects
+#     Hash of custom project names and parameters
 
-class boxen::personal {
+class boxen::personal (
+  $projects          = [],
+  $includes          = [],
+  $casks             = [],
+  $osx_apps          = undef,
+  $homebrew_packages = [],
+  $custom_projects   = {},
+){
   include boxen::config
 
   $manifests = "${boxen::config::repodir}/modules/people/manifests"
@@ -12,4 +36,45 @@ class boxen::personal {
   if file_exists("${manifests}/${login}.pp") {
     include "people::${login}"
   }
+
+  # If $projects looks like ['foo', 'bar'], behaves like:
+  #   include projects::foo
+  #   include projects::bar
+  $project_classes = prefix($projects, 'projects::')
+  class { $project_classes: }
+
+  # If $includes looks like ['foo', 'bar'], behaves like:
+  # class { 'foo': }
+  # class { 'bar': }
+  class { $includes: }
+
+  # $casks and $osx_apps are synonyms. $osx_apps takes precedence
+  $_casks = $osx_apps ? {
+    undef   => $casks,
+    default => $osx_apps
+  }
+  # If any casks/osx_apps are specified, declare them as brewcask packages
+  if count($_casks) > 0 { include brewcask }
+  ensure_resource('package', $casks, {
+    'provider'        => 'brewcask',
+    'install_options' => '--appdir=/Applications',
+  })
+
+  # If any homebrew packages are specified , declare them
+  ensure_resource('package', $homebrew_packages, {
+    'provider' => 'homebrew',
+  })
+
+  # If any custom projects are specified, declare them.
+  # e.g. $custom_projects = {
+  #        'personal-site' => { 'ruby' => '2.1.2', 'nginx' => true }
+  #      }
+  # results in
+  # boxen::project { 'personal-site':
+  #   ruby  => '2.1.2',
+  #   nginx => true,
+  # }
+  #
+  # Multiple projects may be specified in the $custom_projects hash.
+  create_resources(boxen::project, $custom_projects)
 }
