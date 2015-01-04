@@ -1,0 +1,3 @@
+---
+boxen::personal::includes:
+  - boxen::config
