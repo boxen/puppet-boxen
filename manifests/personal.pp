@@ -81,19 +81,9 @@ class boxen::personal (
   # Multiple projects may be specified in the $custom_projects hash.
   create_resources(boxen::project, $custom_projects)
 
-  $dotfiles_repo_dir = "${boxen::config::srcdir}/dotfiles"
   if count($dotfiles) > 0 {
-    repository { $dotfiles_repo_dir:
-      source => "${::boxen_user}/dotfiles"
-    }
-    dotfile { $dotfiles: }
-  }
-  define dotfile () {
-    file { "~/.${title} -> dotfiles/${title}":
-      path    => "/Users/${::boxen_user}/.${title}",
-      ensure  => link,
-      target  => "${boxen::config::srcdir}/dotfiles/${title}",
-      require => Repository["${boxen::config::srcdir}/dotfiles"];
+    class { 'dotfiles':
+      symlinks => $dotfiles
     }
   }
 }
