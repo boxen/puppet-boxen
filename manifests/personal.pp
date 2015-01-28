@@ -17,7 +17,7 @@
 #   custom_projects
 #     Hash of custom project names and parameters
 #   dotfiles
-#     Array of dotfiles to symlink (e.g. ~/.zshrc -> ~/src/dotfiles/.zshrc)
+#     Array of dotfiles to symlink (e.g. ~/.zshrc -> ~/src/dotfiles/zshrc)
 
 class boxen::personal (
   $projects          = [],
@@ -89,8 +89,8 @@ class boxen::personal (
     dotfile { $dotfiles: }
   }
   define dotfile () {
-    file { "~/${title} -> dotfiles/${title}":
-      path    => "/Users/${::boxen_user}/${title}",
+    file { "~/.${title} -> dotfiles/${title}":
+      path    => "/Users/${::boxen_user}/.${title}",
       ensure  => link,
       target  => "${boxen::config::srcdir}/dotfiles/${title}",
       require => Repository["${boxen::config::srcdir}/dotfiles"];
