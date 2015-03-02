@@ -41,12 +41,12 @@ class boxen::personal (
   #   include projects::foo
   #   include projects::bar
   $project_classes = prefix($projects, 'projects::')
-  class { $project_classes: }
+  ensure_resource('class', $project_classes)
 
   # If $includes looks like ['foo', 'bar'], behaves like:
   # class { 'foo': }
   # class { 'bar': }
-  class { $includes: }
+  ensure_resource('class', $includes)
 
   # $casks and $osx_apps are synonyms. $osx_apps takes precedence
   $_casks = $osx_apps ? {
