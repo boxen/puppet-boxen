@@ -1,7 +1,7 @@
 # Custom external facts loader, because you can't pass
 # `--external-dir` to puppet.
 #
-# * Reads from $BOXEN_HOME/facts.d, instead of /etc/puppet/facts.d
+# * Reads from $BOXEN_REPO_DIR/facts.d, instead of /etc/puppet/facts.d
 # * Sets facts' weight to 1 higher than the default loader's weight
 
 require 'facter/util/directory_loader'
@@ -31,9 +31,8 @@ end
 
 # Find where boxen is installed
 config = Boxen::Config.load
-boxen_home = config.repodir
-facts_d = File.join(boxen_home, "facts.d")
+facts_d = File.join(config.repodir, "facts.d")
 
-# Load all "external facts" from $BOXEN_HOME/facts.d
+# Load all "external facts" from $BOXEN_REPO_DIR/facts.d
 loader = BoxenFactsDirectoryLoader.new(facts_d)
 loader.load(Facter.collection)
