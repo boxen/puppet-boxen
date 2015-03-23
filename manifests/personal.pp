@@ -16,6 +16,8 @@
 #     Array of homebrew packages to install
 #   custom_projects
 #     Hash of custom project names and parameters
+#   dotfiles
+#     Array of dotfiles to symlink (e.g. ~/.zshrc -> ~/src/dotfiles/zshrc)
 
 class boxen::personal (
   $projects          = [],
@@ -24,6 +26,7 @@ class boxen::personal (
   $osx_apps          = undef,
   $homebrew_packages = [],
   $custom_projects   = {},
+  $dotfiles          = {},
 ){
   include boxen::config
 
@@ -78,4 +81,10 @@ class boxen::personal (
   #
   # Multiple projects may be specified in the $custom_projects hash.
   create_resources(boxen::project, $custom_projects)
+
+  if count($dotfiles) > 0 {
+    class { 'dotfiles':
+      symlinks => $dotfiles
+    }
+  }
 }
