@@ -14,3 +14,4 @@ boxen::config::srcdir:      "%{::boxen_srcdir}"
 boxen::config::login:       "%{::github_login}"
 boxen::config::repo_url_template: "%{::boxen_repo_url_template}"
 boxen::config::download_url_base: "%{::boxen_download_url_base}"
+boxen::config::hiera_merge_hierarchy: false

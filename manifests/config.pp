@@ -20,6 +20,7 @@ class boxen::config (
   $login = undef,
   $repo_url_template = undef,
   $download_url_base = undef,
+  $hiera_merge_hierarchy = undef
 ) {
   validate_string(
     $home,

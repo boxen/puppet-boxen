@@ -29,6 +29,7 @@ class boxen::personal (
 
   $manifests = "${boxen::config::repodir}/modules/people/manifests"
   $login     = regsubst($boxen::config::login, '-','_', 'G')
+  $merge_hierarchy = $boxen::config::hiera_merge_hierarchy
 
   if $login != $boxen::config::login {
     notice("Changed boxen::personal login to ${login}")
@@ -40,19 +41,39 @@ class boxen::personal (
   # If $projects looks like ['foo', 'bar'], behaves like:
   #   include projects::foo
   #   include projects::bar
-  $project_classes = prefix($projects, 'projects::')
+  $_projects = $merge_hierarchy ? {
+    true      => hiera_array("${name}::projects",[]),
+    default   => $projects
+  }
+  $project_classes = prefix($_projects, 'projects::')
   ensure_resource('class', $project_classes)
 
   # If $includes looks like ['foo', 'bar'], behaves like:
   # class { 'foo': }
   # class { 'bar': }
-  ensure_resource('class', $includes)
-
-  # $casks and $osx_apps are synonyms. $osx_apps takes precedence
-  $_casks = $osx_apps ? {
-    undef   => $casks,
-    default => $osx_apps
+  $_includes = $merge_hierarchy ? {
+    true      => hiera_array("${name}::includes",undef),
+    default   => $includes
   }
+  ensure_resource('class', $_includes)
+
+  if $merge_hierarchy {
+    $merged_osx_apps = hiera_array("${name}::osx_apps",undef)
+    $merged_casks = hiera_array("${name}::casks",undef)
+
+    $_casks = $merged_osx_apps ? {
+      undef   => $merged_casks,
+      default => $merged_osx_apps
+    }
+  }
+  else {
+    # $casks and $osx_apps are synonyms. $osx_apps takes precedence
+    $_casks = $osx_apps ? {
+      undef   => $casks,
+      default => $osx_apps
+    }
+  }
+
   # If any casks/osx_apps are specified, declare them as brewcask packages
   if count($_casks) > 0 { include brewcask }
   ensure_resource('package', $_casks, {
@@ -62,7 +83,11 @@ class boxen::personal (
   })
 
   # If any homebrew packages are specified , declare them
-  ensure_resource('package', $homebrew_packages, {
+  $_homebrew_packages = $merge_hierarchy ? {
+    true      => hiera_array("${name}::homebrew_packages",undef),
+    default   => $homebrew_packages
+  }
+  ensure_resource('package', $_homebrew_packages, {
     'provider' => 'homebrew',
   })
 
@@ -77,5 +102,9 @@ class boxen::personal (
   # }
   #
   # Multiple projects may be specified in the $custom_projects hash.
-  create_resources(boxen::project, $custom_projects)
+  $_custom_projects = $merge_hierarchy ? {
+    true      => hiera_array("${name}::custom_projects",{}),
+    default   => $custom_projects
+  }
+  create_resources(boxen::project, $_custom_projects)
 }
