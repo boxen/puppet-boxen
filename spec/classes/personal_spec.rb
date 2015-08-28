@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe 'boxen::personal' do
-  
   context "username with dash" do
     let(:facts) do
       {
@@ -11,7 +10,7 @@ describe 'boxen::personal' do
       }
     end
 
-    it { should include_class('boxen::config')}
-    it { should include_class('people::some_username')}
+    it { should contain_class('boxen::config') }
+    it { should contain_class('people::some_username') }
   end
 end

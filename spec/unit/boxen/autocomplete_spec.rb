@@ -38,8 +38,8 @@ describe Boxen::Autocomplete do
     end
 
     it "completes files after file options" do
-      call("boxen --logfile ").should == []
-      call("boxen --homedir ").should == []
+      call("boxen --logfile ").should be == []
+      call("boxen --homedir ").should be == []
     end
   end
 end
