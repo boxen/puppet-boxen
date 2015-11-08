@@ -1,4 +1,5 @@
-# Private: Includes a user's personal configuration based on their GitHub username
+# Private: Includes a user's personal configuration based
+#          on their GitHub username
 #
 # Usage:
 #
@@ -88,6 +89,7 @@ class boxen::personal (
     default   => $homebrew_packages
   }
   ensure_resource('package', $_homebrew_packages, {
+    'ensure'   => 'latest',
     'provider' => 'homebrew',
   })
 
