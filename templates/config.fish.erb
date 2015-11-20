@@ -1,0 +1,12 @@
+# Expose basic setup paths. BOXEN_HOME is already exported at the top level.
+
+set -gx BOXEN_BIN_DIR <%= scope.lookupvar('boxen::config::bindir') %>
+set -gx BOXEN_CONFIG_DIR <%= scope.lookupvar('boxen::config::configdir') %>
+set -gx BOXEN_DATA_DIR <%= scope.lookupvar('boxen::config::datadir') %>
+set -gx BOXEN_ENV_DIR <%= scope.lookupvar('boxen::config::envdir') %>
+set -gx BOXEN_LOG_DIR <%= scope.lookupvar('boxen::config::logdir') %>
+set -gx BOXEN_SOCKET_DIR <%= scope.lookupvar('boxen::config::socketdir') %>
+set -gx BOXEN_SRC_DIR <%= scope.lookupvar('boxen::config::srcdir') %>
+
+# Expose boxen's binary download location
+set -gx BOXEN_DOWNLOAD_URL_BASE <%= scope.lookupvar('boxen::config::download_url_base') %>
