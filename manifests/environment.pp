@@ -29,6 +29,21 @@ class boxen::environment(
 
   boxen::env_script {
     'config':
+      content  => template('boxen/config.fish.erb'),
+      priority => 'highest' ;
+    'gh_creds':
+      content  => template('boxen/gh_creds.fish.erb'),
+      priority => 'higher' ;
+    'relative_bin_on_path':
+      ensure   => $relative_bin_on_path_ensure,
+      source   => 'puppet:///modules/boxen/relative_bin_on_path.fish',
+      priority => 'lowest' ;
+    'boxen_autocomplete':
+      content  => template('boxen/boxen_autocomplete.fish.erb'),
+      priority => 'lowest' ;
+  }
+  boxen::env_script {
+    'config':
       content  => template('boxen/config.sh.erb'),
       priority => 'highest' ;
     'gh_creds':
