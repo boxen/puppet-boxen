@@ -15,6 +15,7 @@ define boxen::env_script(
   $priority   = 'normal',
   $source     = undef,
   $content    = undef,
+  $extension  = 'sh',
 ) {
 
   if $source == undef and $content == undef {
@@ -34,7 +35,7 @@ define boxen::env_script(
 
   include boxen::config
 
-  file { "${boxen::config::envdir}/${real_priority}_${scriptname}.sh":
+  file { "${boxen::config::envdir}/${real_priority}_${scriptname}.${extension}":
     ensure  => $ensure,
     source  => $source,
     content => $content,
