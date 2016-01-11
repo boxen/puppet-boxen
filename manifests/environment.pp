@@ -29,18 +29,21 @@ class boxen::environment(
 
   boxen::env_script {
     'config-fish':
-      content   => template('boxen/config.fish.erb'),
-      extension => 'fish',
-      priority  => 'highest' ;
+      content    => template('boxen/config.fish.erb'),
+      scriptname => 'config',
+      extension  => 'fish',
+      priority   => 'highest' ;
     'gh_creds-fish':
-      content   => template('boxen/gh_creds.fish.erb'),
-      extension => 'fish',
-      priority  => 'higher' ;
+      content    => template('boxen/gh_creds.fish.erb'),
+      extension  => 'fish',
+      scriptname => 'gh_creds',
+      priority   => 'higher' ;
     'relative_bin_on_path-fish':
-      ensure    => $relative_bin_on_path_ensure,
-      extension => 'fish',
-      source    => 'puppet:///modules/boxen/relative_bin_on_path.fish',
-      priority  => 'lowest' ;
+      ensure     => $relative_bin_on_path_ensure,
+      scriptname => 'relative_bin_on_path',
+      extension  => 'fish',
+      source     => 'puppet:///modules/boxen/relative_bin_on_path.fish',
+      priority   => 'lowest' ;
   }
   boxen::env_script {
     'config':
