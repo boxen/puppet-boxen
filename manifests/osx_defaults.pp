@@ -8,7 +8,7 @@ define boxen::osx_defaults(
   $value       = undef,
   $user        = undef,
   $type        = undef,
-  $refreshonly = undef,
+  $refreshonly = undef
 ) {
   $defaults_cmd  = '/usr/bin/defaults'
   $default_cmds  = $host ? {
@@ -28,7 +28,7 @@ define boxen::osx_defaults(
 
         $checkvalue = $value ? {
           /(true|yes)/ => '1',
-          /(false|no)/ => '0',
+          /(false|no)/ => '0'
         }
 
       } else {
@@ -57,7 +57,7 @@ define boxen::osx_defaults(
 
       $refreshonly_ = $refreshonly ? {
         undef   => false,
-        default => true,
+        default => true
       }
 
       exec { "osx_defaults write ${host} ${domain}:${key}=>${value}":
