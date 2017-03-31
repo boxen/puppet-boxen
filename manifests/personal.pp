@@ -78,9 +78,7 @@ class boxen::personal (
   # If any casks/osx_apps are specified, declare them as brewcask packages
   if count($_casks) > 0 { include brewcask }
   ensure_resource('package', $_casks, {
-    'provider'        => 'brewcask',
-    'install_options' => ['--appdir=/Applications',
-                          "--binarydir=${boxen::config::homebrewdir}/bin"],
+    'provider'        => 'brewcask'
   })
 
   # If any homebrew packages are specified , declare them
