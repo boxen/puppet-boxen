@@ -3,12 +3,14 @@ module Puppet::Parser::Functions
     Puppet::Parser::Functions.function('include')
 
     repo = "#{Facter[:boxen_home].value}/repo"
-    Dir["#{repo}/modules/projects/manifests/*.pp"].each do |project|
-      class_name = project.split('/').last
+    prefix = "#{repo}/modules/projects/manifests"
+    Dir["#{prefix}/**/*.pp"].each do |path|
+      project = path.gsub /^#{prefix}\/|\.pp$/, ''
+      class_name = project.gsub /\//, '::'
 
-      next if class_name =~ /all\.pp$/
+      next if class_name == 'all'
 
-      function_include [class_name.gsub(/\.pp$/, '')]
+      function_include [class_name]
     end
   end
 end
