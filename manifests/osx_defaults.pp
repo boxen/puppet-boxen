@@ -27,8 +27,10 @@ define boxen::osx_defaults(
         $type_ = 'bool'
 
         $checkvalue = $value ? {
-          /(true|yes)/ => '1',
-          /(false|no)/ => '0',
+          true => '1',
+          false => '0',
+          'yes' => '1',
+          'no' => '0'
         }
 
       } else {
