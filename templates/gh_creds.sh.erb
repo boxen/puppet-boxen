@@ -1,3 +1,4 @@
 # Expose GitHub credentials
 
 export BOXEN_GITHUB_LOGIN=<%= scope.lookupvar('boxen::config::login') %>
+export GITHUB_API_TOKEN=`security find-generic-password -w -s 'GitHub API Token' "/Users/<%= scope.lookupvar('boxen::config::user') %>/Library/Keychains/login.keychain"`
