@@ -30,7 +30,7 @@ define boxen::dotfiles(
   }
 
   if $install_command {
-    exec { "install dotfiles":
+    exec { 'install dotfiles':
       cwd      => $dotfiles_dir,
       command  => $install_command,
       provider => shell,
