@@ -25,6 +25,7 @@ class boxen::personal (
   $osx_apps          = undef,
   $homebrew_packages = [],
   $custom_projects   = {},
+  $dotfiles          = {},
 ){
   include boxen::config
 
@@ -107,4 +108,8 @@ class boxen::personal (
     default   => $custom_projects
   }
   create_resources(boxen::project, $_custom_projects)
+
+  if !empty($dotfiles) {
+    ensure_resource('boxen::dotfiles', 'dotfiles', $dotfiles)
+  }
 }
