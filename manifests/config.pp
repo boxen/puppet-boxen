@@ -57,6 +57,11 @@ class boxen::config (
     source => 'puppet:///modules/boxen/README.md'
   }
 
+  file { "${home}/env.fish":
+    content => template('boxen/env.fish.erb'),
+    mode    => '0755',
+  }
+
   file { "${home}/env.sh":
     content => template('boxen/env.sh.erb'),
     mode    => '0755',
