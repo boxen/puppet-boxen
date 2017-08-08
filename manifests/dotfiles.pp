@@ -1,3 +1,20 @@
+# Private: Manage dotfiles.
+#
+# Usage:
+#
+#   boxen:dotfiles { 'dotfiles':
+#     repository      => 'https://github.com/user/dotfiles',
+#     local_directory => '.dotfiles',
+#     install_command => 'install.sh'
+#   }
+#
+# Parameters:
+#
+#   repository      - Git repository URL.
+#   local_directory - Local location of where you would like to clone
+#                     and manage the repository.
+#   install_command - Script or inline command that you use to setup
+#                     your repository.
 define boxen::dotfiles(
   $repository      = undef,
   $local_directory = 'dotfiles',
