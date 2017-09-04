@@ -2,7 +2,7 @@
 boxen::config::home:        "%{::boxen_home}"
 boxen::config::bindir:      "%{::boxen_home}/bin"
 boxen::config::cachedir:    "%{::boxen_home}/cache"
-boxen::config::configdir:   "%{::boxen_home}/config"
+boxen::config::configdir:   "%{::homebrew_root}/etc/boxen"
 boxen::config::datadir:     "%{::boxen_home}/data"
 boxen::config::envdir:      "%{::boxen_home}/env.d"
 boxen::config::homebrewdir: "%{::homebrew_root}"
