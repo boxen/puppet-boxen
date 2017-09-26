@@ -13,6 +13,8 @@
 #     Array of puppet modules to include
 #   casks
 #     Array of brew-casks to include (aliased as osx_apps)
+#   fonts
+#     Array of font-casks to install
 #   homebrew_packages
 #     Array of homebrew packages to install
 #   custom_projects
@@ -23,6 +25,7 @@ class boxen::personal (
   $includes          = [],
   $casks             = [],
   $osx_apps          = undef,
+  $fonts             = [],
   $homebrew_packages = [],
   $custom_projects   = {},
   $dotfiles          = {},
@@ -77,9 +80,12 @@ class boxen::personal (
   }
 
   # If any casks/osx_apps are specified, declare them as brewcask packages
-  if count($_casks) > 0 { include brewcask }
+  if count($_casks) > 0 or count($fonts) > 0 { include brewcask }
   ensure_resource('package', $_casks, {
     'provider'        => 'brewcask'
+  })
+  ensure_resource('package', prefix($fonts, 'font-'), {
+    'provider' => 'brewcask'
   })
 
   # If any homebrew packages are specified , declare them

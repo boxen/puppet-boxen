@@ -18,7 +18,13 @@ GITHUBTARBALL
   specs:
     module-data (0.0.1)
 
+GITHUBTARBALL
+  remote: toolbear/puppet-brewcask
+  specs:
+    brewcask (0.0.6)
+
 DEPENDENCIES
+  brewcask (= 0.0.6)
   homebrew (= 0.0.16)
   module-data (= 0.0.1)
   stdlib (= 4.1.0)

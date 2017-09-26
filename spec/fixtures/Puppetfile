@@ -1,4 +1,5 @@
 mod 'homebrew',    '0.0.16', :github_tarball => 'boxen/puppet-homebrew'
+mod 'brewcask',    '0.0.6',  :github_tarball => 'toolbear/puppet-brewcask'
 mod 'module-data', '0.0.1',  :github_tarball => 'ripienaar/puppet-module-data'
 mod 'stdlib',      '4.1.0',  :github_tarball => 'puppetlabs/puppetlabs-stdlib'
 mod 'sudo',        '0.0.1',  :github_tarball => 'boxen/puppet-sudo'
